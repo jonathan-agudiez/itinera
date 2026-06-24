@@ -1,0 +1,14 @@
+itinera-v2-api.178-104-205-43.sslip.io {
+    encode gzip zstd
+
+    header {
+        -Server
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "DENY"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        Permissions-Policy "accelerometer=(), autoplay=(), camera=(), display-capture=(), geolocation=(), gyroscope=(), microphone=(), payment=(), usb=()"
+        Strict-Transport-Security "max-age=31536000"
+    }
+
+    reverse_proxy itinera-v2-api:4000
+}

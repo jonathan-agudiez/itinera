@@ -1,0 +1,19 @@
+[build]
+  base = "frontend"
+  command = "npm ci && npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+  NPM_FLAGS = "--no-audit --no-fund"
+
+[[redirects]]
+  from = "/api/*"
+  to = "https://itinera-v2-api.178-104-205-43.sslip.io/api/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
