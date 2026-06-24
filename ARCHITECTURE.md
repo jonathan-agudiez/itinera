@@ -1,4 +1,4 @@
-# Arquitectura de Itinera 2.5.3
+# Arquitectura de Itinera 2.5.4
 
 ## Topología de producción
 
@@ -27,28 +27,23 @@ La edición de duración es segura: antes de acortar o desplazar el intervalo, e
 El mismo conjunto de planes alimenta tres presentaciones:
 
 - Escritorio: una columna por fecha, sin filas horarias y sin scroll horizontal.
-- Móvil: una fecha por pantalla con navegación anterior, siguiente y selector directo.
-- Impresión: todas las fechas en columnas compactas dentro de un A4 apaisado.
+- Móvil: una fecha por pantalla, navegación de fechas y barra principal flotante inferior.
+- A4/PDF: todas las fechas dentro de la misma tabla, con densidad exclusiva de impresión.
 
 Los planes siempre se ordenan por hora de inicio y `sort_order`.
 
-## Sistema visual 2.5.3
+## Sistema visual 2.5.4
 
-La interfaz se apoya en un conjunto único de tokens CSS inspirado en los patrones actuales de iOS:
-
-- Materiales translúcidos reservados para navegación, toolbars, overlays y superficies elevadas.
-- Contenido legible sobre superficies con contraste controlado.
-- Radios concéntricos y controles circulares o en cápsula.
-- Barra flotante superior en escritorio y navegación flotante inferior en móvil.
-- Hojas inferiores para formularios móviles y diálogos centrados en escritorio.
-- Tipografía del sistema con jerarquía clara y espaciado compacto.
-- Modo oscuro mediante `prefers-color-scheme`.
+- Interfaz exclusivamente en modo claro mediante `color-scheme: light only`.
+- Tipografía del sistema y superficies translúcidas inspiradas en la jerarquía visual de iOS.
+- Barra superior en escritorio.
+- Barra flotante fija inferior en móvil, sin marca duplicada y con soporte de áreas seguras.
+- Hojas inferiores móviles con margen lateral, de modo que los formularios no contacten con los bordes de la pantalla.
+- Tarjetas de plan sin iconografía decorativa; la jerarquía depende de hora, título, ubicación, descripción, escala y peso.
 - Compatibilidad con reducción de movimiento y reducción de transparencia.
 - Fallback opaco cuando el navegador no admite `backdrop-filter`.
 
-Las acciones iconográficas conservan `aria-label` y `title`. Las tarjetas de plan no introducen iconos decorativos. Su jerarquía se construye únicamente con hora, título, ubicación, descripción, peso tipográfico y una guía cromática lateral discreta.
-
-La impresión reutiliza la misma estructura visual del planning y aplica tres niveles de densidad en función del número máximo de planes por día: relajado, medio y denso. El resto de la aplicación se oculta al imprimir.
+La impresión conserva la estructura completa del planning. Las reglas de `@media print` reducen exclusivamente la altura, el espaciado y la tipografía de las tarjetas del PDF, sin alterar las vistas interactivas.
 
 ## Autenticación
 
@@ -66,16 +61,8 @@ Cada ruta privada calcula el acceso en el servidor.
 
 ## Migraciones
 
-La versión 2.5.3 no añade ninguna migración. `0002_entry_colors.sql` continúa formando parte del historial para instalaciones limpias.
+La versión 2.5.4 no añade ninguna migración. `0002_entry_colors.sql` continúa formando parte del historial para instalaciones limpias.
 
 ## Aislamiento del despliegue
 
 Producción utiliza el proyecto Compose `itinera_v2`, el volumen `itinera_v2_postgres_data` y el alias de gateway `itinera-v2-api`. No sustituye los contenedores de Itinera v1 ni de Yieldsoft.
-
-
-## Decisiones visuales de v2.5.3
-
-- Se elimina cualquier adaptación automática a modo oscuro y se declara `color-scheme: light`.
-- Las tarjetas de planes mantienen su paleta y borde, pero usan mayor altura y una escala tipográfica más contrastada.
-- En móvil se conserva una fecha por pantalla y se incrementa la legibilidad de hora, título y descripción.
-- La descripción es obligatoria en la validación del cliente y de la API.

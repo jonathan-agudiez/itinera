@@ -1,20 +1,16 @@
-# Itinera 2.5.3
+# Itinera 2.5.4
 
 Itinera es una aplicación colaborativa para crear itinerarios de viaje claros, compartibles e imprimibles.
 
-## Novedades de la versión 2.5.3
+## Novedades de la versión 2.5.4
 
-Esta versión se concentra únicamente en el acabado de los planes dentro del planning:
-
-- Tarjetas con mayor altura mínima y más espacio interior.
-- Hora de mayor tamaño y peso ligero.
-- Título dominante, con un contraste claro frente a la descripción.
-- Descripción siempre visible en la web, incluso en itinerarios de diez días, y obligatoria al crear o editar un plan.
-- Ubicación y descripción con pesos tipográficos más ligeros.
-- Fondos, bordes y sombras coherentes con las tarjetas pastel de la portada.
-- Eliminación de la línea lateral de color para evitar que cada plan parezca un componente distinto a los de la home.
-- Cabeceras de fecha ligeramente mayores, sin alterar su estructura ni el contenedor del planning.
-- Ajustes equivalentes en la vista móvil.
+- Tarjetas de plan ligeramente menos altas, manteniendo la jerarquía tipográfica actual.
+- Fechas de columna de mayor tamaño en escritorio, vista compacta y móvil.
+- Navegación móvil flotante y fija en la zona inferior, sin logo ni barra superior.
+- Respeto de áreas seguras y espacio reservado para que la navegación no cubra contenido.
+- Overlays móviles con margen lateral para evitar que el formulario quede pegado a los bordes.
+- A4/PDF con el planning completo y tarjetas más compactas solo durante la impresión.
+- Interfaz exclusivamente en modo claro.
 - Sin cambios de base de datos ni migraciones nuevas.
 
 ## Arquitectura
@@ -40,11 +36,10 @@ Frontend y backend mantienen sus propios `package.json` y `package-lock.json`.
 - Vista móvil de una fecha por pantalla.
 - Paleta cerrada de doce colores para los planes.
 - Descripción obligatoria en todos los planes nuevos y editados.
-- Impresión A4 apaisada en una sola hoja.
+- Exportación A4/PDF apaisada en una sola página.
 - Enlaces públicos de solo lectura.
 - Colaboradores con permiso de lectura o edición.
 - Protección frente a modificaciones concurrentes.
-- Límites de frecuencia, cabeceras de seguridad, cookies SameSite y auditoría.
 - Healthchecks de aplicación y base de datos.
 
 ## Verificación de calidad

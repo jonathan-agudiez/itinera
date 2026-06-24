@@ -1,19 +1,16 @@
-# Informe de compilación — Itinera 2.5.3
+# Informe de compilación — Itinera 2.5.4
 
 Generado: 24 de junio de 2026
 
 ## Cambios verificados
 
-- Tarjetas de planes con mayor altura mínima en escritorio, vista compacta de diez días y móvil.
-- Hora ampliada y con peso tipográfico ligero.
-- Título con mayor jerarquía visual.
-- Descripción visible en la vista compacta, con peso ligero y hasta tres líneas.
-- Ubicación secundaria y ligera; se oculta solo en la vista compacta para priorizar la descripción.
-- Borde blanco translúcido, fondo pastel y sombra equivalentes a las tarjetas de la portada.
-- Eliminación de la línea lateral cromática de las tarjetas.
-- Cabeceras de fecha ligeramente ampliadas sin modificar su layout ni el contenedor del planning.
-- Descripción obligatoria conservada en frontend y backend.
-- Sin migraciones nuevas.
+- Tarjetas de plan ligeramente más compactas en web y móvil.
+- Cabeceras de fecha de mayor tamaño en las variantes normal, compacta y móvil.
+- Barra de navegación móvil fija abajo, sin logo ni marca en la parte superior.
+- Reserva de espacio inferior y soporte para `safe-area-inset-bottom`.
+- Overlays móviles con margen lateral y comportamiento de hoja inferior.
+- Impresión/PDF A4 con la tabla completa y tarjetas compactadas únicamente dentro de `@media print`.
+- Sin migraciones ni cambios de base de datos.
 
 ## Backend
 
@@ -31,7 +28,7 @@ Generado: 24 de junio de 2026
 - Build de producción con Vite 8.1.0: correcto.
 - 149 módulos transformados.
 - HTML: 0,64 KB; 0,37 KB gzip.
-- CSS: 37,74 KB; 8,34 KB gzip.
+- CSS: 38,08 KB; 8,37 KB gzip.
 - JavaScript principal: 387,49 KB; 115,31 KB gzip.
 - `npm audit`: 0 vulnerabilidades.
 - `npm audit --omit=dev`: 0 vulnerabilidades.

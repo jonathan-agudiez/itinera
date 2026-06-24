@@ -1,4 +1,4 @@
-# Notas de seguridad — Itinera 2.5.3
+# Notas de seguridad — Itinera 2.5.4
 
 ## Controles implementados
 
@@ -17,18 +17,18 @@
 - Los colores de planes se limitan a doce tokens validados.
 - La duración de los itinerarios se valida en servidor entre 1 y 10 días.
 - La API bloquea reducciones de fecha que dejarían planes fuera del intervalo.
+- La descripción de una actividad es obligatoria en cliente y API.
 
 ## Política de contraseñas de esta instalación
 
-A petición del propietario, registro, cambio y recuperación aceptan claves desde 6 caracteres, por lo que un PIN numérico de 6 cifras es válido. Esta política es adecuada únicamente para el uso privado previsto y ofrece menos resistencia frente a intentos de adivinación que una contraseña larga.
+A petición del propietario, registro, cambio y recuperación aceptan claves desde 6 caracteres. Esta política es adecuada únicamente para el uso privado previsto y ofrece menos resistencia frente a intentos de adivinación que una contraseña larga.
 
-Argon2id, los límites de frecuencia y la protección de sesiones permanecen activos. Para una exposición pública amplia se recomienda recuperar una longitud mínima superior.
+Argon2id, los límites de frecuencia y la protección de sesiones permanecen activos.
 
 ## Secretos
 
 No se debe subir `.env.production`. El repositorio contiene únicamente `.env.production.example`.
 
+## Alcance de v2.5.4
 
-## Validación de planes en v2.5.3
-
-La descripción de una actividad es obligatoria tanto en el cliente como en la API. Esta modificación no altera autenticación, sesiones, Argon2id ni controles de autorización.
+Los cambios de esta versión son exclusivamente visuales y de maquetación. No alteran autenticación, sesiones, autorización, CORS, persistencia ni migraciones.
