@@ -47,6 +47,8 @@ export function ItineraryCalendar({
   const selectedDate = dates[selectedIndex] ?? itinerary.startDate;
   const selectedDay = formatDay(selectedDate);
   const selectedEntries = grouped.get(selectedDate) ?? [];
+  const maxEntriesPerDay = Math.max(0, ...dates.map((date) => grouped.get(date)?.length ?? 0));
+  const printDensity = maxEntriesPerDay >= 10 ? 'dense' : maxEntriesPerDay >= 6 ? 'medium' : 'relaxed';
 
   function renderEntry(entry: ItineraryEntry, mobile = false) {
     const time = `${shortTime(entry.startTime)}${entry.endTime ? `–${shortTime(entry.endTime)}` : ''}`;
@@ -61,7 +63,7 @@ export function ItineraryCalendar({
         aria-label={`${time}. ${entry.title}${canWrite ? '. Abrir edición' : ''}`}
       >
         <span className="entry-time">{time}</span>
-        <strong>{entry.title}</strong>
+        <strong className="entry-title">{entry.title}</strong>
         {entry.location && <small className="entry-location">{entry.location}</small>}
         {entry.description && <p>{entry.description}</p>}
       </button>
@@ -84,6 +86,7 @@ export function ItineraryCalendar({
         className="calendar-grid calendar-desktop"
         style={gridStyle}
         data-density={dates.length >= 8 ? 'compact' : 'normal'}
+        data-print-density={printDensity}
       >
         {dates.map((date) => {
           const day = formatDay(date);

@@ -1,21 +1,20 @@
-# Itinera 2.5.0
+# Itinera 2.5.1
 
 Itinera es una aplicación colaborativa para crear itinerarios de viaje claros, compartibles e imprimibles.
 
-## Novedades de la versión 2.5.0
+## Novedades de la versión 2.5.1
 
-- Rediseño visual completo inspirado en el lenguaje de interfaz de iOS 27 y Liquid Glass.
-- Barra principal flotante y translúcida en escritorio.
-- Navegación inferior flotante en móvil, respetando la zona segura del dispositivo.
-- Controles circulares, botones en cápsula y jerarquía visual basada en contenido.
-- Formularios agrupados con campos de apariencia nativa y foco accesible.
-- Modales de escritorio con material translúcido y hojas inferiores en móvil.
-- Calendario multidía más limpio, con cabeceras y tarjetas de plan integradas en el material visual.
-- Tarjetas de viaje, administración, acceso y página pública actualizadas con el mismo sistema de diseño.
-- Compatibilidad automática con modo oscuro.
-- Alternativas para reducción de movimiento y reducción de transparencia.
-- Impresión A4 conservada sin efectos translúcidos ni elementos de navegación.
-- Hoja de estilos consolidada: se eliminan capas antiguas y reglas visuales duplicadas.
+- Rediseño exclusivo de las tarjetas de los planes con una jerarquía tipográfica más cercana a iOS:
+  - hora como información secundaria;
+  - título con mayor tamaño y peso;
+  - ubicación y descripción con contraste progresivo;
+  - color integrado de forma discreta mediante una guía lateral.
+- Superficies de plan más limpias, menos brillantes y con sombras contenidas.
+- Estados hover y pulsación más suaves, sin adornos ni iconos adicionales.
+- Eliminación del hueco superior que provocaba desplazamiento vertical innecesario.
+- Overlays más claros y luminosos en modo claro.
+- Impresión A4 rehecha para mostrar exclusivamente el planning, conservando el lenguaje visual de la web.
+- Densidad de impresión adaptativa según el número máximo de planes de cada día.
 
 ## Arquitectura
 
@@ -101,4 +100,4 @@ npm audit --omit=dev
 
 ## Actualización de producción
 
-Consulta [DEPLOY.md](DEPLOY.md). La actualización conserva `.env.production`, el volumen de PostgreSQL y todos los datos existentes. No incorpora una migración nueva.
+Consulta [DEPLOY.md](DEPLOY.md). La actualización conserva `.env.production`, el volumen de PostgreSQL y todos los datos existentes. No incorpora migraciones.

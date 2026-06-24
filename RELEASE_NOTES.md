@@ -1,27 +1,23 @@
-# Itinera v2.5.0
+# Itinera v2.5.1
 
-Actualización visual completa que sustituye el diseño editorial anterior por una interfaz inspirada en el lenguaje actual de iOS y Liquid Glass.
+Actualización visual enfocada únicamente en las tarjetas de los planes, el ajuste superior de la página, la claridad de los overlays y la impresión A4.
 
 ## Incluido
 
-- Fondo ambiental con profundidad y color suave.
-- Barra de navegación flotante translúcida en escritorio.
-- Barra inferior flotante en móvil con soporte para zonas seguras.
-- Material de cristal aplicado con moderación a navegación, overlays y superficies elevadas.
-- Botones en cápsula, controles circulares y estados de pulsación más naturales.
-- Formularios con agrupación visual de estilo nativo.
-- Modales convertidos en hojas inferiores en móvil.
-- Calendario, tarjetas de plan y selector diario rediseñados.
-- Tarjetas de viajes y panel de administración adaptados al mismo sistema.
-- Modo oscuro automático.
-- Respeto por reducción de movimiento y reducción de transparencia.
-- Fallback para navegadores sin desenfoque de fondo.
-- Impresión A4 sin cristal, navegación ni fondos ambientales.
-- Eliminación de CSS visual heredado y duplicado.
+- Hora tratada como información secundaria compacta.
+- Título de plan con mayor contraste, tamaño y peso.
+- Ubicación y descripción con jerarquía progresiva.
+- Guía cromática lateral sutil asociada al color elegido.
+- Superficies más limpias y sombras más contenidas.
+- Estados de interacción discretos y sin nuevos iconos.
+- Eliminación del hueco superior y del desplazamiento vertical innecesario.
+- Overlays más claros en modo claro y coherentes en modo oscuro.
+- Impresión A4 limitada exclusivamente al planning.
+- Planning impreso con estética cercana a la aplicación web.
+- Compresión automática de las tarjetas impresas cuando un día contiene muchos planes.
 
 ## Compatibilidad
 
 - No hay migraciones nuevas.
-- Se conserva `0002_entry_colors.sql` para instalaciones limpias y despliegues aún no migrados.
 - No es necesario cambiar Caddy, Netlify, la URL pública ni CORS.
 - Los datos y credenciales existentes se conservan.

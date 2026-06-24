@@ -1,4 +1,4 @@
-# Notas de seguridad
+# Notas de seguridad — Itinera 2.5.1
 
 ## Controles implementados
 

@@ -1,4 +1,4 @@
-# Arquitectura de Itinera 2.5.0
+# Arquitectura de Itinera 2.5.1
 
 ## Topología de producción
 
@@ -32,7 +32,7 @@ El mismo conjunto de planes alimenta tres presentaciones:
 
 Los planes siempre se ordenan por hora de inicio y `sort_order`.
 
-## Sistema visual 2.5
+## Sistema visual 2.5.1
 
 La interfaz se apoya en un conjunto único de tokens CSS inspirado en los patrones actuales de iOS:
 
@@ -46,7 +46,9 @@ La interfaz se apoya en un conjunto único de tokens CSS inspirado en los patron
 - Compatibilidad con reducción de movimiento y reducción de transparencia.
 - Fallback opaco cuando el navegador no admite `backdrop-filter`.
 
-Las acciones iconográficas conservan `aria-label` y `title`. Las tarjetas de plan no introducen iconos decorativos y mantienen hora, título, ubicación, descripción y color como únicas señales visuales.
+Las acciones iconográficas conservan `aria-label` y `title`. Las tarjetas de plan no introducen iconos decorativos. Su jerarquía se construye únicamente con hora, título, ubicación, descripción, peso tipográfico y una guía cromática lateral discreta.
+
+La impresión reutiliza la misma estructura visual del planning y aplica tres niveles de densidad en función del número máximo de planes por día: relajado, medio y denso. El resto de la aplicación se oculta al imprimir.
 
 ## Autenticación
 
@@ -64,7 +66,7 @@ Cada ruta privada calcula el acceso en el servidor.
 
 ## Migraciones
 
-La versión 2.5.0 no añade ninguna migración. `0002_entry_colors.sql` continúa formando parte del historial para instalaciones limpias.
+La versión 2.5.1 no añade ninguna migración. `0002_entry_colors.sql` continúa formando parte del historial para instalaciones limpias.
 
 ## Aislamiento del despliegue
 
