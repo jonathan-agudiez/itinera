@@ -1,22 +1,24 @@
-# Itinera v2.3.0
+# Itinera v2.4.0
 
-Actualización centrada en convertir el itinerario en una agenda horaria compacta y visual.
+Actualización centrada en simplificar el itinerario y sustituir la estética recargada por una interfaz más sobria y editorial.
 
 ## Incluido
 
-- Veinte filas horarias: 05:00, 06:00 y sucesivas hasta 23:00, terminando en 00:00.
-- Días como columnas adaptadas al ancho disponible, sin scroll horizontal.
-- Línea temporal móvil con un día por pantalla.
-- Creación rápida desde cualquier celda horaria.
-- Colaboración y zona de peligro trasladadas a overlays accesibles desde iconos.
-- Botones principales compactos con iconografía de trazo tipo Lucide.
-- Paleta de doce colores para cada plan.
-- Persistencia del color mediante una nueva migración PostgreSQL.
-- Contraseñas desde 6 caracteres; se admiten PIN numéricos de 6 cifras.
-- Impresión completa en un único A4 apaisado, con todas las filas y columnas.
+- Eliminación completa de la cuadrícula por horas.
+- Columnas naturales por fecha, con planes ordenados por hora de inicio.
+- Eliminación de «Día 1», «Día 2» y equivalentes en escritorio, móvil e impresión.
+- Creación mediante fecha inicial y número de días.
+- Duración editable entre 1 y 10 días.
+- Protección de datos al acortar un itinerario con planes fuera del nuevo intervalo.
+- Menú principal exclusivamente iconográfico con atributos accesibles y tooltip nativo.
+- Tarjetas de plan sin icono de reloj, categoría, indicador de edición ni adornos innecesarios.
+- Revisión visual de radios, sombras, espacios, tipografía y estados de interacción.
+- Vista móvil diaria simplificada.
+- Impresión compacta en un único A4 apaisado.
 
 ## Compatibilidad
 
-- La base de datos existente se conserva.
-- La migración `0002_entry_colors.sql` asigna `sage` a los planes anteriores.
-- No hay que cambiar Caddy, Netlify, la URL pública ni CORS.
+- No hay migraciones nuevas.
+- Se conserva `0002_entry_colors.sql` para instalaciones limpias y despliegues aún no migrados.
+- El backend admite temporalmente el antiguo campo `endDate` para evitar fallos durante el despliegue escalonado.
+- No es necesario cambiar Caddy, Netlify, la URL pública ni CORS.

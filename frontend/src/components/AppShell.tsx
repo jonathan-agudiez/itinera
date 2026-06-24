@@ -29,6 +29,7 @@ export function AppShell() {
           type="button"
           className="mobile-menu-toggle"
           aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
+          title={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
           aria-expanded={menuOpen}
           aria-controls="main-navigation"
           onClick={() => setMenuOpen((open) => !open)}
@@ -36,10 +37,10 @@ export function AppShell() {
           <Icon name={menuOpen ? 'x' : 'menu'} size={20} />
         </button>
         <nav id="main-navigation" className={`topnav${menuOpen ? ' open' : ''}`} aria-label="Navegación principal">
-          <NavLink to="/dashboard" onClick={closeMenu}><Icon name="briefcase" size={16} /><span>Viajes</span></NavLink>
-          {user?.role === 'ADMIN' && <NavLink to="/admin" onClick={closeMenu}><Icon name="shield" size={16} /><span>Administración</span></NavLink>}
-          <NavLink to="/account" onClick={closeMenu}><Icon name="user-round" size={16} /><span>Cuenta</span></NavLink>
-          <button type="button" className="text-button" onClick={handleLogout}><Icon name="log-out" size={16} /><span>Cerrar sesión</span></button>
+          <NavLink to="/dashboard" onClick={closeMenu} aria-label="Itinerarios" title="Itinerarios"><Icon name="briefcase" size={18} /></NavLink>
+          {user?.role === 'ADMIN' && <NavLink to="/admin" onClick={closeMenu} aria-label="Administración" title="Administración"><Icon name="shield" size={18} /></NavLink>}
+          <NavLink to="/account" onClick={closeMenu} aria-label="Cuenta" title="Cuenta"><Icon name="user-round" size={18} /></NavLink>
+          <button type="button" className="text-button" onClick={handleLogout} aria-label="Cerrar sesión" title="Cerrar sesión"><Icon name="log-out" size={18} /></button>
         </nav>
       </header>
       {menuOpen && <button type="button" className="mobile-menu-scrim" aria-label="Cerrar menú" onClick={closeMenu} />}

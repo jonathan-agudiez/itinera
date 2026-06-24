@@ -1,17 +1,19 @@
-# Itinera 2.3.0
+# Itinera 2.4.0
 
-Itinera es una aplicación colaborativa para crear itinerarios de viaje visuales, horarios y fáciles de compartir.
+Itinera es una aplicación colaborativa para crear itinerarios de viaje claros, compartibles e imprimibles.
 
-## Novedades de la versión 2.3.0
+## Novedades de la versión 2.4.0
 
-- El itinerario se representa como una agenda: columnas por día y filas horarias desde las 05:00 hasta las 00:00.
-- La versión móvil conserva un solo día por pantalla y muestra el mismo horario vertical por horas.
-- Colaboración y eliminación dejan de ocupar espacio permanente: ahora se abren desde iconos en overlays.
-- Acciones principales con iconos de trazo limpio y menos texto visual.
-- Paleta visual de 12 colores coherentes para cada plan.
-- Los colores se guardan en PostgreSQL mediante la migración `0002_entry_colors.sql`.
-- La política de contraseña acepta claves desde 6 caracteres, incluidos PIN numéricos de 6 cifras.
-- Impresión compacta en una sola página A4 apaisada con todas las columnas y las 20 filas horarias.
+- Se recupera la organización natural por días, sin filas horarias.
+- Las cabeceras muestran únicamente la fecha; desaparecen las etiquetas «Día 1», «Día 2», etc.
+- Al crear un itinerario se indica la fecha inicial y una duración de 1 a 10 días.
+- La duración puede modificarse posteriormente desde la configuración.
+- Si una reducción dejara planes fuera del intervalo, la API la bloquea para evitar pérdida de datos.
+- El menú principal utiliza únicamente iconos con `aria-label` y `title`.
+- Las tarjetas de plan eliminan iconos decorativos, etiquetas y señales de edición innecesarias.
+- Diseño visual más sobrio: menos sombras, radios más contenidos, jerarquía tipográfica y color más discretos.
+- La vista móvil mantiene un día por pantalla y navegación directa entre fechas.
+- La impresión conserva todas las columnas en un único A4 apaisado y prioriza hora y título.
 
 ## Arquitectura
 
@@ -31,9 +33,10 @@ Frontend y backend mantienen sus propios `package.json` y `package-lock.json`.
 - Recuperación y cambio de contraseña.
 - Panel de usuario y panel de administración.
 - CRUD completo de itinerarios y planes.
-- Agenda horaria multidía sin desplazamiento horizontal.
-- Vista móvil diaria con navegación anterior/siguiente.
-- Planes coloreables con 12 tonos.
+- Itinerarios de entre 1 y 10 días.
+- Vista multidía sin desplazamiento horizontal.
+- Vista móvil diaria.
+- Paleta cerrada de doce colores para los planes.
 - Impresión A4 apaisada en una sola hoja.
 - Enlaces públicos de solo lectura.
 - Colaboradores con permiso de lectura o edición.
@@ -96,4 +99,4 @@ npm audit --omit=dev
 
 ## Actualización de producción
 
-Consulta [DEPLOY.md](DEPLOY.md). La actualización conserva `.env.production` y el volumen de PostgreSQL. La API aplica automáticamente la migración de color antes de arrancar.
+Consulta [DEPLOY.md](DEPLOY.md). La actualización conserva `.env.production`, el volumen de PostgreSQL y todos los datos existentes. No incorpora una migración nueva.

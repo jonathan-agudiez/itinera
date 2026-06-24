@@ -15,6 +15,8 @@
 - Auditoría de acciones relevantes.
 - PostgreSQL no publica su puerto en producción.
 - Los colores de planes se limitan a doce tokens validados.
+- La duración de los itinerarios se valida en servidor entre 1 y 10 días.
+- La API bloquea reducciones de fecha que dejarían planes fuera del intervalo.
 
 ## Política de contraseñas de esta instalación
 

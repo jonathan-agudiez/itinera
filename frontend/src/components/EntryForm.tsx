@@ -2,7 +2,6 @@ import { useState, type FormEvent } from 'react';
 import { z } from 'zod';
 import { categoryLabels } from '../lib/labels';
 import type { Category, ItineraryEntry, PlanColor } from '../types';
-import { Icon } from './Icon';
 
 export const planColors: Array<{ value: PlanColor; label: string }> = [
   { value: 'sage', label: 'Salvia' },
@@ -91,7 +90,7 @@ export function EntryForm({
       <label>Ubicación<input name="location" defaultValue={entry?.location || ''} placeholder="Embarcadero de Varenna" /></label>
       <label>Categoría<select name="category" defaultValue={entry?.category || 'activity'}>{(['activity', 'visit', 'transport', 'stay', 'food', 'note'] as Category[]).map((category) => <option key={category} value={category}>{categoryLabels[category]}</option>)}</select></label>
       <fieldset className="color-fieldset">
-        <legend><Icon name="palette" size={16} /> Color del plan</legend>
+        <legend>Color</legend>
         <div className="color-palette" role="radiogroup" aria-label="Color del plan">
           {planColors.map((color) => (
             <label className="color-option" data-color={color.value} key={color.value} title={color.label}>
@@ -105,8 +104,8 @@ export function EntryForm({
       <label>Descripción<textarea name="description" rows={4} defaultValue={entry?.description || ''} placeholder="Entradas, recordatorios, detalles de la ruta…" /></label>
       {error && <p className="form-error">{error}</p>}
       <div className="modal-actions spread">
-        <div>{entry && onDelete && <button type="button" className="button danger-ghost icon-label-button" onClick={() => void onDelete()} disabled={busy}><Icon name="trash-2" /><span>Eliminar</span></button>}</div>
-        <div className="inline-actions"><button type="button" className="button ghost icon-label-button" onClick={onCancel}><Icon name="x" /><span>Cancelar</span></button><button className="button primary icon-label-button" disabled={busy}><Icon name="save" /><span>{busy ? 'Guardando…' : 'Guardar'}</span></button></div>
+        <div>{entry && onDelete && <button type="button" className="button danger-ghost" onClick={() => void onDelete()} disabled={busy}>Eliminar</button>}</div>
+        <div className="inline-actions"><button type="button" className="button ghost" onClick={onCancel}>Cancelar</button><button className="button primary" disabled={busy}>{busy ? 'Guardando…' : 'Guardar'}</button></div>
       </div>
     </form>
   );

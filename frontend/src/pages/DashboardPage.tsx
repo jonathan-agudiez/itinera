@@ -13,7 +13,7 @@ const schema = z.object({
   destination: z.string().trim().max(140),
   description: z.string().trim().max(5000),
   startDate: z.iso.date(),
-  endDate: z.iso.date(),
+  dayCount: z.coerce.number().int().min(1).max(10),
   timezone: z.string().min(1).max(80),
 });
 
@@ -41,17 +41,15 @@ export function DashboardPage() {
     event.preventDefault();
     setError('');
     const form = new FormData(event.currentTarget);
-    const input = {
+    const parsed = schema.safeParse({
       title: form.get('title'),
       destination: form.get('destination') || '',
       description: form.get('description') || '',
       startDate: form.get('startDate'),
-      endDate: form.get('endDate'),
+      dayCount: form.get('dayCount'),
       timezone: form.get('timezone') || 'Europe/Madrid',
-    };
-    const parsed = schema.safeParse(input);
-    if (!parsed.success) return setError('Revisa el título y las fechas del viaje.');
-    if (parsed.data.endDate < parsed.data.startDate) return setError('La fecha de finalización no puede ser anterior a la fecha de inicio.');
+    });
+    if (!parsed.success) return setError('Revisa el nombre, la fecha y el número de días.');
     try {
       await create.mutateAsync(parsed.data);
     } catch (value) {
@@ -64,26 +62,23 @@ export function DashboardPage() {
       <header className="page-heading split">
         <div>
           <span className="eyebrow">Tus viajes</span>
-          <h1>Planes de viaje</h1>
-          <p className="muted">Un espacio claro para cada día, horario e idea.</p>
+          <h1>Itinerarios</h1>
         </div>
         <button className="button primary" onClick={() => setOpen(true)}>Nuevo itinerario</button>
       </header>
 
-      {query.isLoading && <div className="center-state">Cargando viajes…</div>}
-      {query.isError && <div className="empty-state"><h2>No se pudieron cargar tus viajes</h2><p>Actualiza la página e inténtalo de nuevo.</p></div>}
+      {query.isLoading && <div className="center-state">Cargando…</div>}
+      {query.isError && <div className="empty-state"><h2>No se pudieron cargar tus viajes</h2></div>}
       {query.data?.length === 0 && (
         <div className="empty-state">
-          <span className="empty-icon">✦</span>
-          <h2>Tu primer itinerario empieza aquí</h2>
-          <p>Crea un viaje y haz doble clic en cualquier día para añadir planes.</p>
+          <h2>Aún no tienes itinerarios</h2>
           <button className="button primary" onClick={() => setOpen(true)}>Crear itinerario</button>
         </div>
       )}
       <div className="trip-grid">
         {query.data?.map((trip) => (
           <Link className="trip-card" to={`/itineraries/${trip.id}`} key={trip.id}>
-            <div className="trip-card-top"><span className="pill">{accessLabels[trip.access || 'OWNER']}</span><span>→</span></div>
+            <div className="trip-card-top"><span className="pill">{accessLabels[trip.access || 'OWNER']}</span></div>
             <h2>{trip.title}</h2>
             <p>{trip.destination || 'Destino por decidir'}</p>
             <div className="trip-dates"><span>{formatDateRange(trip.startDate, trip.endDate)}</span></div>
@@ -94,16 +89,16 @@ export function DashboardPage() {
       {open && (
         <Modal title="Crear itinerario" onClose={() => setOpen(false)}>
           <form className="form-stack" onSubmit={submit}>
-            <label>Nombre del viaje<input name="title" placeholder="Viaje de verano por Dolomitas" required /></label>
+            <label>Nombre<input name="title" placeholder="Dolomitas" required /></label>
             <label>Destino<input name="destination" placeholder="Norte de Italia" /></label>
             <div className="form-grid two">
               <label>Fecha de inicio<input name="startDate" type="date" required /></label>
-              <label>Fecha de finalización<input name="endDate" type="date" required /></label>
+              <label>Número de días<input name="dayCount" type="number" min="1" max="10" defaultValue="5" required /></label>
             </div>
             <label>Zona horaria<select name="timezone" defaultValue="Europe/Madrid"><option>Europe/Madrid</option><option>Europe/Rome</option><option>Europe/London</option><option>America/New_York</option><option>Asia/Tokyo</option></select></label>
-            <label>Descripción<textarea name="description" rows={3} placeholder="Notas, objetivos o una breve descripción" /></label>
+            <label>Descripción<textarea name="description" rows={3} /></label>
             {error && <p className="form-error">{error}</p>}
-            <div className="modal-actions"><button type="button" className="button ghost" onClick={() => setOpen(false)}>Cancelar</button><button className="button primary" disabled={create.isPending}>{create.isPending ? 'Creando…' : 'Crear itinerario'}</button></div>
+            <div className="modal-actions"><button type="button" className="button ghost" onClick={() => setOpen(false)}>Cancelar</button><button className="button primary" disabled={create.isPending}>{create.isPending ? 'Creando…' : 'Crear'}</button></div>
           </form>
         </Modal>
       )}

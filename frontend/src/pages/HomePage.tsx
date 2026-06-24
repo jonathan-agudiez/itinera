@@ -33,8 +33,8 @@ export function HomePage() {
           <span className="eyebrow">Una forma más tranquila de planificar juntos</span>
           <h1>Tu viaje, organizado como las notas que escribirías de forma natural.</h1>
           <p>
-            Crea itinerarios día a día, añade horarios y descripciones con un doble clic
-            y comparte un plan visual de solo lectura o invita a colaboradores de confianza.
+            Reúne fechas, horarios y lugares en una vista limpia que puedes editar,
+            compartir e imprimir.
           </p>
           <div className="hero-actions">
             <Link className="button primary large" to={user ? '/dashboard' : '/register'}>
@@ -52,7 +52,6 @@ export function HomePage() {
                 <b>{item.title}</b>
                 <small>{item.place}</small>
               </div>
-              <div className="preview-empty">Doble clic para añadir</div>
             </div>
           ))}
         </div>

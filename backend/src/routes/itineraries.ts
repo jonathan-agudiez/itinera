@@ -1,4 +1,4 @@
-import { and, asc, eq, gt, lte, or, sql as dsql } from 'drizzle-orm';
+import { and, asc, eq, gt, lt, or, sql as dsql } from 'drizzle-orm';
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { config } from '../config.js';
@@ -18,6 +18,8 @@ import {
   assertDateRange,
   assertEntryDate,
   dateSchema,
+  dayCountFromRange,
+  endDateFromDayCount,
   parseInput,
   timeSchema,
   uuidSchema,
@@ -27,12 +29,26 @@ const itineraryCreateSchema = z.object({
   title: z.string().trim().min(2).max(140),
   destination: z.string().trim().max(140).default(''),
   description: z.string().trim().max(5_000).default(''),
-  startDate: dateSchema,
-  endDate: dateSchema,
   timezone: z.string().trim().min(1).max(80).default('Europe/Madrid'),
+  startDate: dateSchema,
+  dayCount: z.number().int().min(1).max(10).optional(),
+  // Compatibilidad temporal con clientes anteriores a v2.4.0.
+  endDate: dateSchema.optional(),
+}).superRefine((value, context) => {
+  if (value.dayCount === undefined && value.endDate === undefined) {
+    context.addIssue({ code: 'custom', message: 'Indica el número de días' });
+  }
 });
 
-const itineraryUpdateSchema = itineraryCreateSchema.partial().extend({
+const itineraryUpdateSchema = z.object({
+  title: z.string().trim().min(2).max(140).optional(),
+  destination: z.string().trim().max(140).optional(),
+  description: z.string().trim().max(5_000).optional(),
+  timezone: z.string().trim().min(1).max(80).optional(),
+  startDate: dateSchema.optional(),
+  dayCount: z.number().int().min(1).max(10).optional(),
+  // Compatibilidad temporal con clientes anteriores a v2.4.0.
+  endDate: dateSchema.optional(),
   publicShareEnabled: z.boolean().optional(),
 });
 
@@ -156,14 +172,25 @@ export async function registerItineraryRoutes(app: FastifyInstance): Promise<voi
   app.post('/api/v1/itineraries', async (request, reply) => {
     const auth = await requireUser(request);
     const input = parseInput(itineraryCreateSchema, request.body);
-    assertDateRange(input.startDate, input.endDate);
+    const {
+      dayCount,
+      endDate: requestedEndDate,
+      startDate,
+      ...metadata
+    } = input;
+    const endDate = dayCount !== undefined
+      ? endDateFromDayCount(startDate, dayCount)
+      : requestedEndDate!;
+    assertDateRange(startDate, endDate);
 
     const shareToken = createOpaqueToken(36);
     const [itinerary] = await db
       .insert(itineraries)
       .values({
         ownerId: auth.id,
-        ...input,
+        ...metadata,
+        startDate,
+        endDate,
         shareTokenHash: hashToken(shareToken),
         shareTokenHint: shareToken.slice(-8),
       })
@@ -215,11 +242,47 @@ export async function registerItineraryRoutes(app: FastifyInstance): Promise<voi
     const { itinerary, access } = await getAccess(auth, id);
     if (!canManage(access)) forbidden('Solo el propietario o un administrador pueden editar la configuración del itinerario');
 
-    const startDate = input.startDate ?? itinerary.startDate;
-    const endDate = input.endDate ?? itinerary.endDate;
+    const {
+      dayCount,
+      endDate: requestedEndDate,
+      ...changes
+    } = input;
+    const startDate = changes.startDate ?? itinerary.startDate;
+    const currentDayCount = dayCountFromRange(itinerary.startDate, itinerary.endDate);
+    const endDate = dayCount !== undefined
+      ? endDateFromDayCount(startDate, dayCount)
+      : requestedEndDate !== undefined
+        ? requestedEndDate
+        : changes.startDate !== undefined
+          ? endDateFromDayCount(startDate, currentDayCount)
+          : itinerary.endDate;
     assertDateRange(startDate, endDate);
 
-    const [updated] = await db.update(itineraries).set(input).where(eq(itineraries.id, id)).returning();
+    const [outsideRange] = await db
+      .select({ count: dsql<number>`count(*)` })
+      .from(itineraryEntries)
+      .where(
+        and(
+          eq(itineraryEntries.itineraryId, id),
+          or(
+            lt(itineraryEntries.entryDate, startDate),
+            gt(itineraryEntries.entryDate, endDate),
+          ),
+        ),
+      );
+    if (Number(outsideRange?.count ?? 0) > 0) {
+      throw new AppError(
+        409,
+        'ITINERARY_HAS_ENTRIES_OUTSIDE_RANGE',
+        'Mueve o elimina los planes que quedarían fuera de la nueva duración',
+      );
+    }
+
+    const [updated] = await db
+      .update(itineraries)
+      .set({ ...changes, endDate })
+      .where(eq(itineraries.id, id))
+      .returning();
     if (!updated) notFound();
 
     await writeAudit({

@@ -19,13 +19,23 @@ export function parseInput<T>(schema: z.ZodType<T>, value: unknown): T {
   return result.data;
 }
 
-export function assertDateRange(startDate: string, endDate: string): void {
+export function dayCountFromRange(startDate: string, endDate: string): number {
   const start = new Date(`${startDate}T00:00:00Z`);
   const end = new Date(`${endDate}T00:00:00Z`);
-  const days = Math.round((end.getTime() - start.getTime()) / 86_400_000);
+  return Math.round((end.getTime() - start.getTime()) / 86_400_000) + 1;
+}
 
-  if (days < 0 || days > 90) {
-    throw new AppError(422, 'INVALID_DATE_RANGE', 'El itinerario debe tener una duración de entre 1 y 91 días');
+export function endDateFromDayCount(startDate: string, dayCount: number): string {
+  const end = new Date(`${startDate}T00:00:00Z`);
+  end.setUTCDate(end.getUTCDate() + dayCount - 1);
+  return end.toISOString().slice(0, 10);
+}
+
+export function assertDateRange(startDate: string, endDate: string): void {
+  const days = dayCountFromRange(startDate, endDate);
+
+  if (days < 1 || days > 10) {
+    throw new AppError(422, 'INVALID_DATE_RANGE', 'El itinerario debe tener entre 1 y 10 días');
   }
 }
 

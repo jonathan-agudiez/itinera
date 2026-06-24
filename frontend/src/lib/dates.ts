@@ -15,6 +15,10 @@ export function enumerateDates(startDate: string, endDate: string): string[] {
   return dates;
 }
 
+export function dayCountFromRange(startDate: string, endDate: string): number {
+  return enumerateDates(startDate, endDate).length;
+}
+
 export function formatDay(date: string): { weekday: string; day: string; month: string } {
   const value = new Date(`${date}T12:00:00`);
   return {

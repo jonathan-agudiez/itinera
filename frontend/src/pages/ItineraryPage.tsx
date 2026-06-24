@@ -7,7 +7,7 @@ import { ItineraryCalendar } from '../components/ItineraryCalendar';
 import { Icon } from '../components/Icon';
 import { Modal } from '../components/Modal';
 import { apiRequest, jsonBody } from '../lib/api';
-import { formatDateRange } from '../lib/dates';
+import { dayCountFromRange, formatDateRange } from '../lib/dates';
 import { accessLabels, permissionLabels } from '../lib/labels';
 import type { ItineraryBundle, ItineraryEntry, Permission } from '../types';
 
@@ -16,7 +16,7 @@ const settingsSchema = z.object({
   destination: z.string().trim().max(140),
   description: z.string().trim().max(5000),
   startDate: z.iso.date(),
-  endDate: z.iso.date(),
+  dayCount: z.coerce.number().int().min(1).max(10),
   timezone: z.string().min(1).max(80),
   publicShareEnabled: z.boolean(),
 });
@@ -76,11 +76,11 @@ export function ItineraryPage() {
       destination: form.get('destination') || '',
       description: form.get('description') || '',
       startDate: form.get('startDate'),
-      endDate: form.get('endDate'),
+      dayCount: form.get('dayCount'),
       timezone: form.get('timezone'),
       publicShareEnabled: form.get('publicShareEnabled') === 'on',
     });
-    if (!parsed.success || parsed.data.endDate < parsed.data.startDate) return setError('Revisa los datos y las fechas del itinerario.');
+    if (!parsed.success) return setError('Revisa los datos, la fecha y el número de días.');
     try {
       await apiRequest(`/itineraries/${id}`, { method: 'PATCH', ...jsonBody(parsed.data) });
       setSettingsOpen(false);
@@ -137,7 +137,7 @@ export function ItineraryPage() {
     <div className="itinerary-page">
       <header className="itinerary-heading">
         <div>
-          <button className="back-link icon-label-button" onClick={() => navigate('/dashboard')}><Icon name="arrow-left" size={16} /><span>Viajes</span></button>
+          <button className="back-link" onClick={() => navigate('/dashboard')}>← Itinerarios</button>
           <span className="eyebrow">{data.itinerary.destination || 'Itinerario'}</span>
           <h1>{data.itinerary.title}</h1>
           <p className="muted">{formatDateRange(data.itinerary.startDate, data.itinerary.endDate)} · {accessLabels[data.access]}</p>
@@ -147,14 +147,14 @@ export function ItineraryPage() {
           {canManage && <button className="action-icon" onClick={() => setCollaborationOpen(true)} aria-label="Gestionar colaboradores" title="Colaboradores"><Icon name="users" /></button>}
           {canManage && <button className="action-icon" onClick={() => setSettingsOpen(true)} aria-label="Configurar itinerario" title="Configuración"><Icon name="settings" /></button>}
           {canManage && <button className="action-icon accent" onClick={() => void rotateShare()} aria-label="Crear nuevo enlace compartido" title="Nuevo enlace compartido"><Icon name="share-2" /></button>}
-          {canManage && <button className="action-icon danger-icon" onClick={() => setDangerOpen(true)} aria-label="Abrir zona de peligro" title="Eliminar itinerario"><Icon name="trash-2" /></button>}
+          {canManage && <button className="action-icon danger-icon" onClick={() => setDangerOpen(true)} aria-label="Eliminar itinerario" title="Eliminar itinerario"><Icon name="trash-2" /></button>}
         </div>
       </header>
 
       {message && <div className="notice success">{message}{shareUrl && <button className="action-icon compact" onClick={() => void navigator.clipboard?.writeText(shareUrl)} aria-label="Copiar enlace de nuevo" title="Copiar"><Icon name="copy" size={16} /></button>}</div>}
       {error && <div className="notice error">{error}</div>}
 
-      <ItineraryCalendar itinerary={data.itinerary} entries={data.entries} canWrite={canWrite} onCreate={(date, startTime) => setEditor({ date, startTime })} onEdit={(entry) => setEditor({ date: entry.entryDate, startTime: entry.startTime.slice(0, 5), entry })} />
+      <ItineraryCalendar itinerary={data.itinerary} entries={data.entries} canWrite={canWrite} onCreate={(date) => setEditor({ date })} onEdit={(entry) => setEditor({ date: entry.entryDate, startTime: entry.startTime.slice(0, 5), entry })} />
 
       {editor && (
         <Modal title={editor.entry ? 'Editar plan' : 'Añadir plan'} onClose={() => setEditor(null)}>
@@ -173,14 +173,13 @@ export function ItineraryPage() {
 
       {collaborationOpen && (
         <Modal title="Colaboradores" onClose={() => setCollaborationOpen(false)}>
-          <p className="muted modal-intro">Invita a tus colegas y decide si pueden consultar o editar el viaje.</p>
           <form className="collaborator-form" onSubmit={addCollaborator}>
             <input name="email" type="email" placeholder="persona@ejemplo.com" aria-label="Correo del colaborador" required />
             <select name="permission" defaultValue="READ" aria-label="Permiso"><option value="READ">{permissionLabels.READ}</option><option value="WRITE">{permissionLabels.WRITE}</option></select>
-            <button className="button primary icon-label-button"><Icon name="plus" /><span>Añadir</span></button>
+            <button className="button primary">Añadir</button>
           </form>
           <div className="collaborator-list">
-            {data.collaborators.length === 0 && <div className="overlay-empty"><Icon name="users" size={24} /><p>Todavía no hay colaboradores.</p></div>}
+            {data.collaborators.length === 0 && <div className="overlay-empty"><p>Sin colaboradores</p></div>}
             {data.collaborators.map((person) => (
               <div className="collaborator-row" key={person.userId}>
                 <div><strong>{person.displayName}</strong><small>{person.email}</small></div>
@@ -195,12 +194,11 @@ export function ItineraryPage() {
       {dangerOpen && (
         <Modal title="Eliminar itinerario" onClose={() => setDangerOpen(false)}>
           <div className="danger-overlay">
-            <span className="danger-overlay-icon"><Icon name="trash-2" size={26} /></span>
             <div><h3>Esta acción es permanente</h3><p>Se eliminarán el itinerario, todos sus planes y las colaboraciones asociadas.</p></div>
           </div>
           <div className="modal-actions">
-            <button type="button" className="button ghost icon-label-button" onClick={() => setDangerOpen(false)}><Icon name="x" /><span>Cancelar</span></button>
-            <button type="button" className="button danger icon-label-button" onClick={() => void deleteItinerary()}><Icon name="trash-2" /><span>Eliminar definitivamente</span></button>
+            <button type="button" className="button ghost" onClick={() => setDangerOpen(false)}>Cancelar</button>
+            <button type="button" className="button danger" onClick={() => void deleteItinerary()}>Eliminar definitivamente</button>
           </div>
         </Modal>
       )}
@@ -210,7 +208,7 @@ export function ItineraryPage() {
           <form className="form-stack" onSubmit={saveSettings}>
             <label>Nombre del viaje<input name="title" defaultValue={data.itinerary.title} required /></label>
             <label>Destino<input name="destination" defaultValue={data.itinerary.destination} /></label>
-            <div className="form-grid two"><label>Fecha de inicio<input name="startDate" type="date" defaultValue={data.itinerary.startDate} required /></label><label>Fecha de finalización<input name="endDate" type="date" defaultValue={data.itinerary.endDate} required /></label></div>
+            <div className="form-grid two"><label>Fecha de inicio<input name="startDate" type="date" defaultValue={data.itinerary.startDate} required /></label><label>Número de días<input name="dayCount" type="number" min="1" max="10" defaultValue={dayCountFromRange(data.itinerary.startDate, data.itinerary.endDate)} required /></label></div>
             <label>Zona horaria<input name="timezone" defaultValue={data.itinerary.timezone} required /></label>
             <label>Descripción<textarea name="description" rows={4} defaultValue={data.itinerary.description} /></label>
             <label className="checkbox-row"><input name="publicShareEnabled" type="checkbox" defaultChecked={data.itinerary.publicShareEnabled} /><span>Activar enlace público de solo lectura</span></label>
