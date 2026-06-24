@@ -22,30 +22,30 @@ export function RegisterPage() {
     setError('');
     const form = new FormData(event.currentTarget);
     const parsed = schema.safeParse({ displayName: form.get('displayName'), email: form.get('email'), password: form.get('password') });
-    if (!parsed.success) return setError('Use a valid email and a 12-character password with upper, lower and numeric characters.');
+    if (!parsed.success) return setError('Usa un correo válido y una contraseña de 12 caracteres con mayúsculas, minúsculas y números.');
     setBusy(true);
     try {
       await apiRequest('/auth/register', { method: 'POST', ...jsonBody(parsed.data) });
       await refresh();
       navigate('/dashboard', { replace: true });
     } catch (value) {
-      setError(value instanceof Error ? value.message : 'Could not create account.');
+      setError(value instanceof Error ? value.message : 'No se pudo crear la cuenta.');
     } finally {
       setBusy(false);
     }
   }
 
   return (
-    <AuthCard title="Create your account" subtitle="Plan privately, share safely, collaborate when it matters.">
+    <AuthCard title="Crea tu cuenta" subtitle="Planifica en privado, comparte con seguridad y colabora cuando lo necesites.">
       <form className="form-stack" onSubmit={submit} noValidate>
-        <label>Name<input name="displayName" autoComplete="name" required /></label>
-        <label>Email<input name="email" type="email" autoComplete="email" required /></label>
-        <label>Password<input name="password" type="password" autoComplete="new-password" minLength={12} required /></label>
-        <p className="form-hint">At least 12 characters, including uppercase, lowercase and a number.</p>
+        <label>Nombre<input name="displayName" autoComplete="name" required /></label>
+        <label>Correo electrónico<input name="email" type="email" autoComplete="email" required /></label>
+        <label>Contraseña<input name="password" type="password" autoComplete="new-password" minLength={12} required /></label>
+        <p className="form-hint">Al menos 12 caracteres, con una mayúscula, una minúscula y un número.</p>
         {error && <p className="form-error">{error}</p>}
-        <button className="button primary full" disabled={busy}>{busy ? 'Creating…' : 'Create account'}</button>
+        <button className="button primary full" disabled={busy}>{busy ? 'Creando cuenta…' : 'Crear cuenta'}</button>
       </form>
-      <div className="auth-links"><span>Already registered?</span><Link to="/login">Sign in</Link></div>
+      <div className="auth-links"><span>¿Ya tienes una cuenta?</span><Link to="/login">Iniciar sesión</Link></div>
     </AuthCard>
   );
 }

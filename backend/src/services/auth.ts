@@ -94,6 +94,6 @@ export async function requireUser(request: FastifyRequest): Promise<AuthUser> {
 
 export async function requireAdmin(request: FastifyRequest): Promise<AuthUser> {
   const user = await requireUser(request);
-  if (user.role !== 'ADMIN') forbidden('Administrator access required');
+  if (user.role !== 'ADMIN') forbidden('Se requiere acceso de administrador');
   return user;
 }

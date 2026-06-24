@@ -20,7 +20,7 @@ export function LoginPage() {
     setError('');
     const form = new FormData(event.currentTarget);
     const parsed = schema.safeParse({ email: form.get('email'), password: form.get('password') });
-    if (!parsed.success) return setError('Enter a valid email and password.');
+    if (!parsed.success) return setError('Introduce un correo electrónico y una contraseña válidos.');
     setBusy(true);
     try {
       await apiRequest<{ user: User }>('/auth/login', { method: 'POST', ...jsonBody(parsed.data) });
@@ -28,21 +28,21 @@ export function LoginPage() {
       const state = location.state as { from?: string } | null;
       navigate(state?.from || '/dashboard', { replace: true });
     } catch (value) {
-      setError(value instanceof Error ? value.message : 'Could not sign in.');
+      setError(value instanceof Error ? value.message : 'No se pudo iniciar sesión.');
     } finally {
       setBusy(false);
     }
   }
 
   return (
-    <AuthCard title="Welcome back" subtitle="Sign in to continue planning your journeys.">
+    <AuthCard title="Bienvenido de nuevo" subtitle="Inicia sesión para continuar planificando tus viajes.">
       <form className="form-stack" onSubmit={submit} noValidate>
-        <label>Email<input name="email" type="email" autoComplete="email" required /></label>
-        <label>Password<input name="password" type="password" autoComplete="current-password" required /></label>
+        <label>Correo electrónico<input name="email" type="email" autoComplete="email" required /></label>
+        <label>Contraseña<input name="password" type="password" autoComplete="current-password" required /></label>
         {error && <p className="form-error">{error}</p>}
-        <button className="button primary full" disabled={busy}>{busy ? 'Signing in…' : 'Sign in'}</button>
+        <button className="button primary full" disabled={busy}>{busy ? 'Iniciando sesión…' : 'Iniciar sesión'}</button>
       </form>
-      <div className="auth-links"><Link to="/forgot-password">Forgot password?</Link><Link to="/register">Create account</Link></div>
+      <div className="auth-links"><Link to="/forgot-password">¿Has olvidado la contraseña?</Link><Link to="/register">Crear cuenta</Link></div>
     </AuthCard>
   );
 }

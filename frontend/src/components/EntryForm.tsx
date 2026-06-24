@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { z } from 'zod';
+import { categoryLabels } from '../lib/labels';
 import type { Category, ItineraryEntry } from '../types';
 
 const schema = z.object({
@@ -44,9 +45,9 @@ export function EntryForm({
       location: form.get('location') || '',
       category: form.get('category'),
     });
-    if (!parsed.success) return setError('Check the date, time and title.');
+    if (!parsed.success) return setError('Revisa la fecha, la hora y el título.');
     if (parsed.data.endTime && parsed.data.endTime <= parsed.data.startTime) {
-      return setError('End time must be later than start time.');
+      return setError('La hora de finalización debe ser posterior a la hora de inicio.');
     }
     try {
       await onSave({
@@ -55,25 +56,25 @@ export function EntryForm({
         ...(entry ? { version: entry.version } : {}),
       });
     } catch (value) {
-      setError(value instanceof Error ? value.message : 'Could not save the activity.');
+      setError(value instanceof Error ? value.message : 'No se pudo guardar la actividad.');
     }
   }
 
   return (
     <form className="form-stack" onSubmit={submit}>
       <div className="form-grid three">
-        <label>Date<input name="entryDate" type="date" defaultValue={entry?.entryDate || date} required /></label>
-        <label>Starts<input name="startTime" type="time" defaultValue={entry?.startTime.slice(0, 5) || '09:00'} required /></label>
-        <label>Ends<input name="endTime" type="time" defaultValue={entry?.endTime?.slice(0, 5) || ''} /></label>
+        <label>Fecha<input name="entryDate" type="date" defaultValue={entry?.entryDate || date} required /></label>
+        <label>Empieza<input name="startTime" type="time" defaultValue={entry?.startTime.slice(0, 5) || '09:00'} required /></label>
+        <label>Termina<input name="endTime" type="time" defaultValue={entry?.endTime?.slice(0, 5) || ''} /></label>
       </div>
-      <label>Title<input name="title" defaultValue={entry?.title || ''} placeholder="Ferry to Bellagio" autoFocus required /></label>
-      <label>Location<input name="location" defaultValue={entry?.location || ''} placeholder="Varenna pier" /></label>
-      <label>Category<select name="category" defaultValue={entry?.category || 'activity'}>{(['activity', 'visit', 'transport', 'stay', 'food', 'note'] as Category[]).map((category) => <option key={category} value={category}>{category[0].toUpperCase() + category.slice(1)}</option>)}</select></label>
-      <label>Description<textarea name="description" rows={4} defaultValue={entry?.description || ''} placeholder="Tickets, reminders, route details…" /></label>
+      <label>Título<input name="title" defaultValue={entry?.title || ''} placeholder="Ferry a Bellagio" autoFocus required /></label>
+      <label>Ubicación<input name="location" defaultValue={entry?.location || ''} placeholder="Embarcadero de Varenna" /></label>
+      <label>Categoría<select name="category" defaultValue={entry?.category || 'activity'}>{(['activity', 'visit', 'transport', 'stay', 'food', 'note'] as Category[]).map((category) => <option key={category} value={category}>{categoryLabels[category]}</option>)}</select></label>
+      <label>Descripción<textarea name="description" rows={4} defaultValue={entry?.description || ''} placeholder="Entradas, recordatorios, detalles de la ruta…" /></label>
       {error && <p className="form-error">{error}</p>}
       <div className="modal-actions spread">
-        <div>{entry && onDelete && <button type="button" className="button danger-ghost" onClick={() => void onDelete()} disabled={busy}>Delete</button>}</div>
-        <div className="inline-actions"><button type="button" className="button ghost" onClick={onCancel}>Cancel</button><button className="button primary" disabled={busy}>{busy ? 'Saving…' : 'Save'}</button></div>
+        <div>{entry && onDelete && <button type="button" className="button danger-ghost" onClick={() => void onDelete()} disabled={busy}>Eliminar</button>}</div>
+        <div className="inline-actions"><button type="button" className="button ghost" onClick={onCancel}>Cancelar</button><button className="button primary" disabled={busy}>{busy ? 'Guardando…' : 'Guardar'}</button></div>
       </div>
     </form>
   );

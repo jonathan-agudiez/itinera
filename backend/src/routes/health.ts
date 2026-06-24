@@ -5,7 +5,7 @@ export async function registerHealthRoutes(app: FastifyInstance): Promise<void> 
   app.get('/api/v1/health/live', async () => ({
     status: 'ok',
     service: 'itinera-api',
-    version: '2.0.0',
+    version: '2.1.0',
     timestamp: new Date().toISOString(),
   }));
 

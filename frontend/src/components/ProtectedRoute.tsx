@@ -6,7 +6,7 @@ export function ProtectedRoute({ children, admin = false }: { children: ReactNod
   const { user, loading } = useAuth();
   const location = useLocation();
 
-  if (loading) return <div className="center-state">Loading Itinera…</div>;
+  if (loading) return <div className="center-state">Cargando Itinera…</div>;
   if (!user) return <Navigate to="/login" replace state={{ from: location.pathname }} />;
   if (admin && user.role !== 'ADMIN') return <Navigate to="/dashboard" replace />;
   return children;

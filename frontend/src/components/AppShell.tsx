@@ -13,15 +13,15 @@ export function AppShell() {
   return (
     <div className="app-shell">
       <header className="topbar">
-        <NavLink to="/dashboard" className="brand" aria-label="Itinera dashboard">
+        <NavLink to="/dashboard" className="brand" aria-label="Panel de Itinera">
           <span className="brand-mark">I</span>
           <span>Itinera</span>
         </NavLink>
-        <nav className="topnav" aria-label="Main navigation">
-          <NavLink to="/dashboard">Trips</NavLink>
-          {user?.role === 'ADMIN' && <NavLink to="/admin">Admin</NavLink>}
-          <NavLink to="/account">Account</NavLink>
-          <button type="button" className="text-button" onClick={handleLogout}>Sign out</button>
+        <nav className="topnav" aria-label="Navegación principal">
+          <NavLink to="/dashboard">Viajes</NavLink>
+          {user?.role === 'ADMIN' && <NavLink to="/admin">Administración</NavLink>}
+          <NavLink to="/account">Cuenta</NavLink>
+          <button type="button" className="text-button" onClick={handleLogout}>Cerrar sesión</button>
         </nav>
       </header>
       <main className="app-main"><Outlet /></main>

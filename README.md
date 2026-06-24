@@ -1,41 +1,49 @@
-# Itinera 2.0.0
+# Itinera 2.1.0
 
-Itinera is a collaborative travel-itinerary application built from a clean architecture. It presents each trip as a horizontal day-by-day calendar. Double-clicking a day creates a plan; double-clicking a plan edits its time, title, description, location and category.
+Itinera es una aplicación colaborativa para crear itinerarios de viaje claros, visuales y fáciles de compartir.
 
-## Why version 2 is a clean rebuild
+## Novedades de la versión 2.1.0
 
-Version 2 does not inherit the original Next.js/NestJS dependency tree. It deliberately uses a smaller stack with no dependency overrides or forced audit fixes:
+- Interfaz completa en castellano.
+- Fechas, días de la semana, meses, categorías, permisos y roles adaptados a español.
+- Calendario sin desplazamiento horizontal: las columnas se ajustan al contenedor y se redistribuyen de forma responsiva.
+- Diseño compacto automático para itinerarios con muchos días.
+- Botón **Imprimir itinerario** en la vista privada y en los enlaces compartidos.
+- Maquetación exclusiva para impresión en A4 apaisado, sin navegación, formularios ni paneles de gestión.
+- Cabecera de impresión con título, destino, fechas y descripción.
+- Mensajes de validación, conexión y API en castellano.
+- Correos de recuperación de contraseña en castellano.
+
+## Arquitectura
 
 - **Frontend:** React 19 + Vite 8 + TypeScript.
 - **Backend:** Fastify 5 + TypeScript.
-- **Database:** PostgreSQL 17 + Drizzle ORM.
-- **Validation:** Zod in frontend and backend.
-- **Authentication:** opaque server-side sessions stored as SHA-256 hashes in PostgreSQL.
-- **Passwords:** Argon2id.
-- **Production:** static frontend on Netlify; API and PostgreSQL on Hetzner; Caddy as the shared TLS gateway.
+- **Base de datos:** PostgreSQL 17 + Drizzle ORM.
+- **Validación:** Zod en frontend y backend.
+- **Autenticación:** sesiones opacas persistidas como hashes SHA-256.
+- **Contraseñas:** Argon2id.
+- **Producción:** frontend estático en Netlify; API y PostgreSQL en Hetzner; Caddy como gateway TLS compartido.
 
-The frontend and backend have independent `package.json` and `package-lock.json` files. This avoids workspace-resolution coupling and makes audits and deployment reproducible.
+Frontend y backend mantienen sus propios `package.json` y `package-lock.json`, sin workspaces ni dependencias acopladas.
 
-## Included functionality
+## Funcionalidades
 
-- Registration, login and logout.
-- Password recovery through Resend's HTTP API, with a safe log-only fallback while mail is not configured.
-- Password change and permanent account deletion.
-- User and administrator panels.
-- Full itinerary CRUD.
-- Activity CRUD with optimistic-concurrency protection.
-- Horizontal calendar with double-click creation and editing.
-- Read-only public links whose raw tokens are never stored in the database.
-- Registered collaborators with `READ` or `WRITE` permission.
-- Administrator management of users and all itineraries.
-- Frontend and backend validation.
-- Rate limiting, security headers, SameSite cookies, origin checks and audit logs.
-- Indexed relational schema, foreign keys, constraints and transactional migrations.
-- Health endpoints and Docker healthchecks.
+- Registro, inicio y cierre de sesión.
+- Recuperación y cambio de contraseña.
+- Eliminación permanente de cuenta.
+- Panel de usuario y panel de administración.
+- CRUD completo de itinerarios y actividades.
+- Calendario por días con edición mediante doble clic.
+- Impresión profesional del itinerario en A4.
+- Enlaces públicos de solo lectura.
+- Colaboradores con permiso de lectura o edición.
+- Protección frente a modificaciones concurrentes.
+- Límites de frecuencia, cabeceras de seguridad, cookies SameSite y registro de auditoría.
+- Healthchecks de aplicación y base de datos.
 
-## Local development
+## Desarrollo local
 
-Requirements: Node.js 22.12 or newer, npm and Docker.
+Requisitos: Node.js 22.12 o superior, npm y Docker.
 
 ```bash
 cp backend/.env.example backend/.env
@@ -51,7 +59,7 @@ node dist/seeds/admin.js
 npm run dev
 ```
 
-In another terminal:
+En otra terminal:
 
 ```bash
 cd frontend
@@ -59,9 +67,9 @@ npm ci
 npm run dev
 ```
 
-Open `http://localhost:5173`.
+Abrir `http://localhost:5173`.
 
-## Quality commands
+## Verificación de calidad
 
 Backend:
 
@@ -71,6 +79,7 @@ npm ci
 npm run typecheck
 npm test
 npm run build
+npm audit
 npm audit --omit=dev
 ```
 
@@ -81,9 +90,10 @@ cd frontend
 npm ci
 npm run typecheck
 npm run build
+npm audit
 npm audit --omit=dev
 ```
 
-## Production deployment
+## Actualización de producción
 
-See [DEPLOY.md](DEPLOY.md). The v2 compose project and Docker aliases are intentionally different from v1, so v2 can be tested beside the current deployment before any traffic is switched.
+Consulta [DEPLOY.md](DEPLOY.md). La actualización conserva `.env.production`, la base de datos y el volumen de PostgreSQL existentes.

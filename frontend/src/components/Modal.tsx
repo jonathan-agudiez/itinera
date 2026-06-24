@@ -11,13 +11,13 @@ export function Modal({ title, children, onClose }: { title: string; children: R
 
   return (
     <div className="modal-backdrop" role="presentation" onMouseDown={onClose}>
-      <section className="modal-card" role="dialog" aria-modal="true" aria-label={title} onMouseDown={(e) => e.stopPropagation()}>
+      <section className="modal-card" role="dialog" aria-modal="true" aria-label={title} onMouseDown={(event) => event.stopPropagation()}>
         <header className="modal-header">
           <div>
             <span className="eyebrow">Itinera</span>
             <h2>{title}</h2>
           </div>
-          <button className="icon-button" type="button" onClick={onClose} aria-label="Close">×</button>
+          <button className="icon-button" type="button" onClick={onClose} aria-label="Cerrar">×</button>
         </header>
         {children}
       </section>

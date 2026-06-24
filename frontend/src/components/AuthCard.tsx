@@ -9,7 +9,7 @@ export function AuthCard({ title, subtitle, children }: { title: string; subtitl
         <span>Itinera</span>
       </Link>
       <section className="auth-card">
-        <span className="eyebrow">Travel, organised beautifully</span>
+        <span className="eyebrow">Viajes organizados con elegancia</span>
         <h1>{title}</h1>
         <p className="muted">{subtitle}</p>
         {children}

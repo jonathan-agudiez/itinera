@@ -1,6 +1,8 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { apiRequest, jsonBody } from '../lib/api';
+import { formatDate, formatDateRange } from '../lib/dates';
+import { roleLabels } from '../lib/labels';
 import type { Role } from '../types';
 
 interface AdminUser {
@@ -38,50 +40,50 @@ export function AdminPage() {
   }
 
   async function deleteUser(user: AdminUser) {
-    if (!window.confirm(`Delete ${user.email} and all owned itineraries?`)) return;
+    if (!window.confirm(`¿Eliminar ${user.email} y todos sus itinerarios?`)) return;
     await apiRequest<void>(`/admin/users/${user.id}`, { method: 'DELETE' });
     await queryClient.invalidateQueries({ queryKey: ['admin'] });
   }
 
   async function deleteTrip(trip: AdminItinerary) {
-    if (!window.confirm(`Delete “${trip.title}”?`)) return;
+    if (!window.confirm(`¿Eliminar “${trip.title}”?`)) return;
     await apiRequest<void>(`/admin/itineraries/${trip.id}`, { method: 'DELETE' });
     await queryClient.invalidateQueries({ queryKey: ['admin'] });
   }
 
   return (
     <div className="page-container">
-      <header className="page-heading"><span className="eyebrow">Administration</span><h1>Platform overview</h1><p className="muted">Moderate accounts and itineraries with a complete audit trail.</p></header>
+      <header className="page-heading"><span className="eyebrow">Administración</span><h1>Resumen de la plataforma</h1><p className="muted">Gestiona cuentas e itinerarios con un registro de auditoría completo.</p></header>
       <div className="stat-grid">
-        <div className="stat-card"><span>Users</span><strong>{stats.data?.users ?? '—'}</strong></div>
-        <div className="stat-card"><span>Itineraries</span><strong>{stats.data?.itineraries ?? '—'}</strong></div>
-        <div className="stat-card"><span>Activities</span><strong>{stats.data?.entries ?? '—'}</strong></div>
+        <div className="stat-card"><span>Usuarios</span><strong>{stats.data?.users ?? '—'}</strong></div>
+        <div className="stat-card"><span>Itinerarios</span><strong>{stats.data?.itineraries ?? '—'}</strong></div>
+        <div className="stat-card"><span>Actividades</span><strong>{stats.data?.entries ?? '—'}</strong></div>
       </div>
-      <div className="tab-bar"><button className={tab === 'users' ? 'active' : ''} onClick={() => setTab('users')}>Users</button><button className={tab === 'itineraries' ? 'active' : ''} onClick={() => setTab('itineraries')}>Itineraries</button></div>
+      <div className="tab-bar"><button className={tab === 'users' ? 'active' : ''} onClick={() => setTab('users')}>Usuarios</button><button className={tab === 'itineraries' ? 'active' : ''} onClick={() => setTab('itineraries')}>Itinerarios</button></div>
       {tab === 'users' ? (
         <div className="table-card">
-          <table><thead><tr><th>User</th><th>Role</th><th>Status</th><th>Created</th><th /></tr></thead><tbody>
+          <table><thead><tr><th>Usuario</th><th>Rol</th><th>Estado</th><th>Creado</th><th /></tr></thead><tbody>
             {users.data?.map((user) => (
               <tr key={user.id}>
                 <td><strong>{user.displayName}</strong><small>{user.email}</small></td>
-                <td><select value={user.role} onChange={(e) => void updateUser(user.id, { role: e.target.value as Role })}><option value="USER">User</option><option value="ADMIN">Admin</option></select></td>
-                <td><label className="switch-label"><input type="checkbox" checked={user.isActive} onChange={(e) => void updateUser(user.id, { isActive: e.target.checked })} /><span>{user.isActive ? 'Active' : 'Disabled'}</span></label></td>
-                <td>{new Date(user.createdAt).toLocaleDateString()}</td>
-                <td><button className="button danger-ghost small" onClick={() => void deleteUser(user)}>Delete</button></td>
+                <td><select value={user.role} onChange={(event) => void updateUser(user.id, { role: event.target.value as Role })}><option value="USER">{roleLabels.USER}</option><option value="ADMIN">{roleLabels.ADMIN}</option></select></td>
+                <td><label className="switch-label"><input type="checkbox" checked={user.isActive} onChange={(event) => void updateUser(user.id, { isActive: event.target.checked })} /><span>{user.isActive ? 'Activo' : 'Desactivado'}</span></label></td>
+                <td>{formatDate(user.createdAt.slice(0, 10))}</td>
+                <td><button className="button danger-ghost small" onClick={() => void deleteUser(user)}>Eliminar</button></td>
               </tr>
             ))}
           </tbody></table>
         </div>
       ) : (
         <div className="table-card">
-          <table><thead><tr><th>Itinerary</th><th>Owner</th><th>Dates</th><th>Sharing</th><th /></tr></thead><tbody>
+          <table><thead><tr><th>Itinerario</th><th>Propietario</th><th>Fechas</th><th>Compartido</th><th /></tr></thead><tbody>
             {trips.data?.map((trip) => (
               <tr key={trip.id}>
                 <td><strong>{trip.title}</strong><small>{trip.destination}</small></td>
                 <td><strong>{trip.ownerName}</strong><small>{trip.ownerEmail}</small></td>
-                <td>{trip.startDate} — {trip.endDate}</td>
-                <td>{trip.publicShareEnabled ? 'Enabled' : 'Disabled'}</td>
-                <td><button className="button danger-ghost small" onClick={() => void deleteTrip(trip)}>Delete</button></td>
+                <td>{formatDateRange(trip.startDate, trip.endDate)}</td>
+                <td>{trip.publicShareEnabled ? 'Activado' : 'Desactivado'}</td>
+                <td><button className="button danger-ghost small" onClick={() => void deleteTrip(trip)}>Eliminar</button></td>
               </tr>
             ))}
           </tbody></table>

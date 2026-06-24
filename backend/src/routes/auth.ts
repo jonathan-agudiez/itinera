@@ -55,7 +55,7 @@ export async function registerAuthRoutes(app: FastifyInstance): Promise<void> {
       const email = normalizeEmail(input.email);
 
       const [existing] = await db.select({ id: users.id }).from(users).where(eq(users.email, email)).limit(1);
-      if (existing) throw new AppError(409, 'EMAIL_EXISTS', 'An account already exists for this email');
+      if (existing) throw new AppError(409, 'EMAIL_EXISTS', 'Ya existe una cuenta con este correo electrónico');
 
       const passwordHash = await hashPassword(input.password);
       const [user] = await db
@@ -63,7 +63,7 @@ export async function registerAuthRoutes(app: FastifyInstance): Promise<void> {
         .values({ email, displayName: input.displayName, passwordHash })
         .returning();
 
-      if (!user) throw new AppError(500, 'CREATE_FAILED', 'Could not create the user');
+      if (!user) throw new AppError(500, 'CREATE_FAILED', 'No se pudo crear el usuario');
 
       const session = await createSession(user.id, request);
       setSessionCookie(reply, session.token, session.expiresAt);
@@ -88,7 +88,7 @@ export async function registerAuthRoutes(app: FastifyInstance): Promise<void> {
       const [user] = await db.select().from(users).where(eq(users.email, email)).limit(1);
 
       if (!user || !user.isActive || !(await verifyPassword(user.passwordHash, input.password))) {
-        throw new AppError(401, 'INVALID_CREDENTIALS', 'Email or password is incorrect');
+        throw new AppError(401, 'INVALID_CREDENTIALS', 'El correo electrónico o la contraseña no son correctos');
       }
 
       const session = await createSession(user.id, request);
@@ -145,12 +145,12 @@ export async function registerAuthRoutes(app: FastifyInstance): Promise<void> {
         const resetUrl = `${config.PUBLIC_APP_URL}/reset-password?token=${encodeURIComponent(token)}`;
         await sendMail({
           to: user.email,
-          subject: 'Reset your Itinera password',
-          html: `<p>Hello ${user.displayName},</p><p>Use this secure link within one hour:</p><p><a href="${resetUrl}">Reset password</a></p>`,
+          subject: 'Restablece tu contraseña de Itinera',
+          html: `<p>Hola ${user.displayName},</p><p>Utiliza este enlace seguro durante la próxima hora:</p><p><a href="${resetUrl}">Restablecer contraseña</a></p>`,
         });
       }
 
-      return reply.status(202).send({ message: 'If the account exists, a reset message has been sent' });
+      return reply.status(202).send({ message: 'Si la cuenta existe, se ha enviado un mensaje de recuperación' });
     },
   );
 
@@ -174,7 +174,7 @@ export async function registerAuthRoutes(app: FastifyInstance): Promise<void> {
         )
         .limit(1);
 
-      if (!record) throw new AppError(400, 'INVALID_RESET_TOKEN', 'Reset token is invalid or expired');
+      if (!record) throw new AppError(400, 'INVALID_RESET_TOKEN', 'El enlace de recuperación no es válido o ha caducado');
 
       const passwordHash = await hashPassword(input.password);
       await db.transaction(async (transaction) => {
@@ -194,7 +194,7 @@ export async function registerAuthRoutes(app: FastifyInstance): Promise<void> {
         ipAddress: request.ip,
       });
 
-      return { message: 'Password updated successfully' };
+      return { message: 'La contraseña se ha actualizado correctamente' };
     },
   );
 }

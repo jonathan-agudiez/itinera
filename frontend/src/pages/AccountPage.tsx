@@ -16,11 +16,11 @@ export function AccountPage() {
     event.preventDefault();
     setError(''); setMessage('');
     const displayName = String(new FormData(event.currentTarget).get('displayName') || '').trim();
-    if (displayName.length < 2) return setError('Name must contain at least two characters.');
+    if (displayName.length < 2) return setError('El nombre debe tener al menos dos caracteres.');
     try {
       await apiRequest('/users/me', { method: 'PATCH', ...jsonBody({ displayName }) });
-      await refresh(); setMessage('Profile updated.');
-    } catch (value) { setError(value instanceof Error ? value.message : 'Could not update profile.'); }
+      await refresh(); setMessage('Perfil actualizado.');
+    } catch (value) { setError(value instanceof Error ? value.message : 'No se pudo actualizar el perfil.'); }
   }
 
   async function changePassword(event: FormEvent<HTMLFormElement>) {
@@ -29,50 +29,50 @@ export function AccountPage() {
     const form = new FormData(event.currentTarget);
     const currentPassword = String(form.get('currentPassword') || '');
     const newPassword = String(form.get('newPassword') || '');
-    if (!passwordSchema.safeParse(newPassword).success) return setError('New password must be at least 12 characters with upper, lower and numeric characters.');
+    if (!passwordSchema.safeParse(newPassword).success) return setError('La nueva contraseña debe tener al menos 12 caracteres, con mayúsculas, minúsculas y números.');
     try {
       await apiRequest('/users/me/change-password', { method: 'POST', ...jsonBody({ currentPassword, newPassword }) });
       await logout(); navigate('/login');
-    } catch (value) { setError(value instanceof Error ? value.message : 'Could not change password.'); }
+    } catch (value) { setError(value instanceof Error ? value.message : 'No se pudo cambiar la contraseña.'); }
   }
 
   async function deleteAccount(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const password = String(new FormData(event.currentTarget).get('password') || '');
-    if (!window.confirm('Delete your account, itineraries and collaboration data permanently?')) return;
+    if (!window.confirm('¿Eliminar permanentemente tu cuenta, tus itinerarios y los datos de colaboración?')) return;
     try {
       await apiRequest<void>('/users/me', { method: 'DELETE', ...jsonBody({ password }) });
       navigate('/', { replace: true });
-    } catch (value) { setError(value instanceof Error ? value.message : 'Could not delete account.'); }
+    } catch (value) { setError(value instanceof Error ? value.message : 'No se pudo eliminar la cuenta.'); }
   }
 
   return (
     <div className="page-container narrow">
-      <header className="page-heading"><span className="eyebrow">Account</span><h1>Your profile</h1><p className="muted">Manage your identity and security.</p></header>
+      <header className="page-heading"><span className="eyebrow">Cuenta</span><h1>Tu perfil</h1><p className="muted">Gestiona tu identidad y seguridad.</p></header>
       {message && <div className="notice success">{message}</div>}
       {error && <div className="notice error">{error}</div>}
       <section className="panel-card">
-        <h2>Profile</h2>
+        <h2>Perfil</h2>
         <form className="form-stack" onSubmit={updateProfile}>
-          <label>Name<input name="displayName" defaultValue={user?.displayName} required /></label>
-          <label>Email<input value={user?.email || ''} disabled /></label>
-          <button className="button primary align-start">Save profile</button>
+          <label>Nombre<input name="displayName" defaultValue={user?.displayName} required /></label>
+          <label>Correo electrónico<input value={user?.email || ''} disabled /></label>
+          <button className="button primary align-start">Guardar perfil</button>
         </form>
       </section>
       <section className="panel-card">
-        <h2>Change password</h2>
+        <h2>Cambiar contraseña</h2>
         <form className="form-stack" onSubmit={changePassword}>
-          <label>Current password<input name="currentPassword" type="password" autoComplete="current-password" required /></label>
-          <label>New password<input name="newPassword" type="password" autoComplete="new-password" minLength={12} required /></label>
-          <button className="button primary align-start">Change password</button>
+          <label>Contraseña actual<input name="currentPassword" type="password" autoComplete="current-password" required /></label>
+          <label>Nueva contraseña<input name="newPassword" type="password" autoComplete="new-password" minLength={12} required /></label>
+          <button className="button primary align-start">Cambiar contraseña</button>
         </form>
       </section>
       <section className="panel-card danger-panel">
-        <h2>Delete account</h2>
-        <p className="muted">This action cannot be undone.</p>
+        <h2>Eliminar cuenta</h2>
+        <p className="muted">Esta acción no se puede deshacer.</p>
         <form className="form-stack" onSubmit={deleteAccount}>
-          <label>Confirm password<input name="password" type="password" required /></label>
-          <button className="button danger align-start">Delete account</button>
+          <label>Confirma tu contraseña<input name="password" type="password" required /></label>
+          <button className="button danger align-start">Eliminar cuenta</button>
         </form>
       </section>
     </div>

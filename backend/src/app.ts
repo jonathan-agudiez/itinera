@@ -33,7 +33,7 @@ export async function buildApp(): Promise<FastifyInstance> {
         callback(null, true);
         return;
       }
-      callback(new Error('Origin not allowed'), false);
+      callback(new Error('Origen no permitido'), false);
     },
   });
   await app.register(helmet, {
@@ -50,7 +50,7 @@ export async function buildApp(): Promise<FastifyInstance> {
     if (mutationMethods.has(request.method)) {
       const origin = request.headers.origin;
       if (origin && !config.corsOrigins.includes(origin)) {
-        throw new AppError(403, 'INVALID_ORIGIN', 'Request origin is not allowed');
+        throw new AppError(403, 'INVALID_ORIGIN', 'El origen de la solicitud no está permitido');
       }
     }
 
@@ -73,18 +73,18 @@ export async function buildApp(): Promise<FastifyInstance> {
     const databaseError = error as { code?: string; constraint_name?: string };
     if (databaseError.code === '23505') {
       return reply.status(409).send({
-        error: { code: 'CONFLICT', message: 'A record with those values already exists' },
+        error: { code: 'CONFLICT', message: 'Ya existe un registro con esos datos' },
       });
     }
 
     request.log.error({ err: error }, 'Unhandled request error');
     return reply.status(500).send({
-      error: { code: 'INTERNAL_ERROR', message: 'An unexpected error occurred' },
+      error: { code: 'INTERNAL_ERROR', message: 'Se ha producido un error inesperado' },
     });
   });
 
   app.setNotFoundHandler((_request, reply) => {
-    return reply.status(404).send({ error: { code: 'NOT_FOUND', message: 'Route not found' } });
+    return reply.status(404).send({ error: { code: 'NOT_FOUND', message: 'Ruta no encontrada' } });
   });
 
   await registerHealthRoutes(app);

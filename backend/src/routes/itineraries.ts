@@ -66,7 +66,7 @@ type Access = 'OWNER' | 'WRITE' | 'READ' | 'ADMIN';
 
 async function getAccess(auth: AuthUser, itineraryId: string): Promise<{ itinerary: Itinerary; access: Access }> {
   const [itinerary] = await db.select().from(itineraries).where(eq(itineraries.id, itineraryId)).limit(1);
-  if (!itinerary) notFound('Itinerary not found');
+  if (!itinerary) notFound('Itinerario no encontrado');
 
   if (auth.role === 'ADMIN') return { itinerary, access: 'ADMIN' };
   if (itinerary.ownerId === auth.id) return { itinerary, access: 'OWNER' };
@@ -82,7 +82,7 @@ async function getAccess(auth: AuthUser, itineraryId: string): Promise<{ itinera
     )
     .limit(1);
 
-  if (!collaborator) forbidden('You do not have access to this itinerary');
+  if (!collaborator) forbidden('No tienes acceso a este itinerario');
   return { itinerary, access: collaborator.permission };
 }
 
@@ -125,7 +125,7 @@ async function bundle(itinerary: Itinerary, access: Access | 'PUBLIC') {
 
 function validateTimes(startTime: string, endTime?: string | null): void {
   if (endTime && endTime <= startTime) {
-    throw new AppError(422, 'INVALID_TIME_RANGE', 'End time must be later than start time');
+    throw new AppError(422, 'INVALID_TIME_RANGE', 'La hora de finalización debe ser posterior a la hora de inicio');
   }
 }
 
@@ -168,7 +168,7 @@ export async function registerItineraryRoutes(app: FastifyInstance): Promise<voi
       })
       .returning();
 
-    if (!itinerary) throw new AppError(500, 'CREATE_FAILED', 'Could not create itinerary');
+    if (!itinerary) throw new AppError(500, 'CREATE_FAILED', 'No se pudo crear el itinerario');
     await writeAudit({
       actorUserId: auth.id,
       action: 'ITINERARY_CREATED',
@@ -196,7 +196,7 @@ export async function registerItineraryRoutes(app: FastifyInstance): Promise<voi
       )
       .limit(1);
 
-    if (!itinerary) notFound('Shared itinerary not found');
+    if (!itinerary) notFound('Itinerario compartido no encontrado');
     return bundle(itinerary, 'PUBLIC');
   });
 
@@ -212,7 +212,7 @@ export async function registerItineraryRoutes(app: FastifyInstance): Promise<voi
     const { id } = parseInput(idParamsSchema, request.params);
     const input = parseInput(itineraryUpdateSchema, request.body);
     const { itinerary, access } = await getAccess(auth, id);
-    if (!canManage(access)) forbidden('Only the owner or an administrator can edit itinerary settings');
+    if (!canManage(access)) forbidden('Solo el propietario o un administrador pueden editar la configuración del itinerario');
 
     const startDate = input.startDate ?? itinerary.startDate;
     const endDate = input.endDate ?? itinerary.endDate;
@@ -236,7 +236,7 @@ export async function registerItineraryRoutes(app: FastifyInstance): Promise<voi
     const auth = await requireUser(request);
     const { id } = parseInput(idParamsSchema, request.params);
     const { access } = await getAccess(auth, id);
-    if (!canManage(access)) forbidden('Only the owner or an administrator can delete this itinerary');
+    if (!canManage(access)) forbidden('Solo el propietario o un administrador pueden eliminar este itinerario');
 
     await writeAudit({
       actorUserId: auth.id,
@@ -253,7 +253,7 @@ export async function registerItineraryRoutes(app: FastifyInstance): Promise<voi
     const auth = await requireUser(request);
     const { id } = parseInput(idParamsSchema, request.params);
     const { access } = await getAccess(auth, id);
-    if (!canManage(access)) forbidden('Only the owner or an administrator can rotate the share link');
+    if (!canManage(access)) forbidden('Solo el propietario o un administrador pueden renovar el enlace compartido');
 
     const token = createOpaqueToken(36);
     await db
@@ -281,15 +281,15 @@ export async function registerItineraryRoutes(app: FastifyInstance): Promise<voi
     const { id } = parseInput(idParamsSchema, request.params);
     const input = parseInput(collaboratorCreateSchema, request.body);
     const { itinerary, access } = await getAccess(auth, id);
-    if (!canManage(access)) forbidden('Only the owner or an administrator can manage collaborators');
+    if (!canManage(access)) forbidden('Solo el propietario o un administrador pueden gestionar colaboradores');
 
     const email = normalizeEmail(input.email);
     const [collaboratorUser] = await db.select().from(users).where(eq(users.email, email)).limit(1);
     if (!collaboratorUser || !collaboratorUser.isActive) {
-      notFound('The collaborator must have an active Itinera account');
+      notFound('El colaborador debe tener una cuenta activa de Itinera');
     }
     if (collaboratorUser.id === itinerary.ownerId) {
-      throw new AppError(409, 'OWNER_IS_NOT_COLLABORATOR', 'The owner already has full access');
+      throw new AppError(409, 'OWNER_IS_NOT_COLLABORATOR', 'El propietario ya dispone de acceso completo');
     }
 
     await db
@@ -308,7 +308,7 @@ export async function registerItineraryRoutes(app: FastifyInstance): Promise<voi
       metadata: { collaboratorUserId: collaboratorUser.id, permission: input.permission },
       ipAddress: request.ip,
     });
-    return reply.status(201).send({ message: 'Collaborator saved' });
+    return reply.status(201).send({ message: 'Colaborador guardado' });
   });
 
   app.patch('/api/v1/itineraries/:id/collaborators/:userId', async (request) => {
@@ -316,7 +316,7 @@ export async function registerItineraryRoutes(app: FastifyInstance): Promise<voi
     const { id, userId } = parseInput(collaboratorParamsSchema, request.params);
     const input = parseInput(collaboratorUpdateSchema, request.body);
     const { access } = await getAccess(auth, id);
-    if (!canManage(access)) forbidden('Only the owner or an administrator can manage collaborators');
+    if (!canManage(access)) forbidden('Solo el propietario o un administrador pueden gestionar colaboradores');
 
     const [updated] = await db
       .update(itineraryCollaborators)
@@ -328,7 +328,7 @@ export async function registerItineraryRoutes(app: FastifyInstance): Promise<voi
         ),
       )
       .returning();
-    if (!updated) notFound('Collaborator not found');
+    if (!updated) notFound('Colaborador no encontrado');
     return { collaborator: updated };
   });
 
@@ -336,7 +336,7 @@ export async function registerItineraryRoutes(app: FastifyInstance): Promise<voi
     const auth = await requireUser(request);
     const { id, userId } = parseInput(collaboratorParamsSchema, request.params);
     const { access } = await getAccess(auth, id);
-    if (!canManage(access)) forbidden('Only the owner or an administrator can manage collaborators');
+    if (!canManage(access)) forbidden('Solo el propietario o un administrador pueden gestionar colaboradores');
 
     await db
       .delete(itineraryCollaborators)
@@ -354,7 +354,7 @@ export async function registerItineraryRoutes(app: FastifyInstance): Promise<voi
     const { id } = parseInput(idParamsSchema, request.params);
     const input = parseInput(entryCreateSchema, request.body);
     const { itinerary, access } = await getAccess(auth, id);
-    if (!canWrite(access)) forbidden('This itinerary is read-only for your account');
+    if (!canWrite(access)) forbidden('Este itinerario es de solo lectura para tu cuenta');
 
     assertEntryDate(input.entryDate, itinerary.startDate, itinerary.endDate);
     validateTimes(input.startTime, input.endTime);
@@ -363,7 +363,7 @@ export async function registerItineraryRoutes(app: FastifyInstance): Promise<voi
       .insert(itineraryEntries)
       .values({ itineraryId: id, ...input, endTime: input.endTime ?? null })
       .returning();
-    if (!entry) throw new AppError(500, 'CREATE_FAILED', 'Could not create entry');
+    if (!entry) throw new AppError(500, 'CREATE_FAILED', 'No se pudo crear la actividad');
     await writeAudit({
       actorUserId: auth.id,
       action: 'ENTRY_CREATED',
@@ -380,16 +380,16 @@ export async function registerItineraryRoutes(app: FastifyInstance): Promise<voi
     const { id, entryId } = parseInput(entryParamsSchema, request.params);
     const input = parseInput(entryUpdateSchema, request.body);
     const { itinerary, access } = await getAccess(auth, id);
-    if (!canWrite(access)) forbidden('This itinerary is read-only for your account');
+    if (!canWrite(access)) forbidden('Este itinerario es de solo lectura para tu cuenta');
 
     const [current] = await db
       .select()
       .from(itineraryEntries)
       .where(and(eq(itineraryEntries.id, entryId), eq(itineraryEntries.itineraryId, id)))
       .limit(1);
-    if (!current) notFound('Entry not found');
+    if (!current) notFound('Actividad no encontrada');
     if (current.version !== input.version) {
-      throw new AppError(409, 'STALE_ENTRY', 'This entry was changed by someone else. Reload and try again.');
+      throw new AppError(409, 'STALE_ENTRY', 'Otra persona ha modificado esta actividad. Recarga la página e inténtalo de nuevo.');
     }
 
     const entryDate = input.entryDate ?? current.entryDate;
@@ -404,7 +404,7 @@ export async function registerItineraryRoutes(app: FastifyInstance): Promise<voi
       .set({ ...changes, endTime, version: current.version + 1 })
       .where(and(eq(itineraryEntries.id, entryId), eq(itineraryEntries.version, current.version)))
       .returning();
-    if (!updated) throw new AppError(409, 'STALE_ENTRY', 'This entry was changed by someone else');
+    if (!updated) throw new AppError(409, 'STALE_ENTRY', 'Otra persona ha modificado esta actividad');
     return { entry: updated };
   });
 
@@ -412,7 +412,7 @@ export async function registerItineraryRoutes(app: FastifyInstance): Promise<voi
     const auth = await requireUser(request);
     const { id, entryId } = parseInput(entryParamsSchema, request.params);
     const { access } = await getAccess(auth, id);
-    if (!canWrite(access)) forbidden('This itinerary is read-only for your account');
+    if (!canWrite(access)) forbidden('Este itinerario es de solo lectura para tu cuenta');
 
     await db
       .delete(itineraryEntries)

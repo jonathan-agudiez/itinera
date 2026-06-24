@@ -1,6 +1,13 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
 
+const previewDays = [
+  { day: 'lun 21', time: '08:30', title: 'Vuelo a Milán', place: 'Terminal 2' },
+  { day: 'mar 22', time: '10:00', title: 'Ferry por el lago de Como', place: 'Embarcadero de Varenna' },
+  { day: 'mié 23', time: '09:15', title: 'Ruta hacia Dolomitas', place: 'Carretera panorámica' },
+  { day: 'jue 24', time: '11:30', title: 'Sendero de Seceda', place: 'Ortisei' },
+];
+
 export function HomePage() {
   const { user } = useAuth();
   return (
@@ -12,40 +19,40 @@ export function HomePage() {
         </Link>
         <div className="landing-actions">
           {user ? (
-            <Link className="button primary" to="/dashboard">Open dashboard</Link>
+            <Link className="button primary" to="/dashboard">Abrir panel</Link>
           ) : (
             <>
-              <Link className="button ghost" to="/login">Sign in</Link>
-              <Link className="button primary" to="/register">Create account</Link>
+              <Link className="button ghost" to="/login">Iniciar sesión</Link>
+              <Link className="button primary" to="/register">Crear cuenta</Link>
             </>
           )}
         </div>
       </header>
       <main className="hero">
         <div className="hero-copy">
-          <span className="eyebrow">A calmer way to plan together</span>
-          <h1>Your trip, laid out like the notes you naturally make.</h1>
+          <span className="eyebrow">Una forma más tranquila de planificar juntos</span>
+          <h1>Tu viaje, organizado como las notas que escribirías de forma natural.</h1>
           <p>
-            Build day-by-day itineraries, add times and descriptions with a double click,
-            and share a beautiful read-only plan or invite trusted collaborators.
+            Crea itinerarios día a día, añade horarios y descripciones con un doble clic
+            y comparte un plan visual de solo lectura o invita a colaboradores de confianza.
           </p>
           <div className="hero-actions">
             <Link className="button primary large" to={user ? '/dashboard' : '/register'}>
-              Start planning
+              Empezar a planificar
             </Link>
-            <a className="button ghost large" href="#preview">See the calendar</a>
+            <a className="button ghost large" href="#preview">Ver el calendario</a>
           </div>
         </div>
-        <div id="preview" className="hero-preview" aria-label="Calendar preview">
-          {['Mon 21', 'Tue 22', 'Wed 23', 'Thu 24'].map((day, index) => (
-            <div className="preview-day" key={day}>
-              <strong>{day}</strong>
+        <div id="preview" className="hero-preview" aria-label="Vista previa del calendario">
+          {previewDays.map((item, index) => (
+            <div className="preview-day" key={item.day}>
+              <strong>{item.day}</strong>
               <div className={`preview-card tone-${index + 1}`}>
-                <span>{index === 0 ? '08:30' : index === 1 ? '10:00' : index === 2 ? '09:15' : '11:30'}</span>
-                <b>{['Flight to Milan', 'Lake Como ferry', 'Dolomites drive', 'Seceda hike'][index]}</b>
-                <small>{['Terminal 2', 'Varenna pier', 'Scenic route', 'Ortisei'][index]}</small>
+                <span>{item.time}</span>
+                <b>{item.title}</b>
+                <small>{item.place}</small>
               </div>
-              <div className="preview-empty">Double-click to add</div>
+              <div className="preview-empty">Doble clic para añadir</div>
             </div>
           ))}
         </div>

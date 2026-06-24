@@ -11,23 +11,23 @@ export function ForgotPasswordPage() {
     event.preventDefault();
     setError('');
     const email = String(new FormData(event.currentTarget).get('email') || '');
-    if (!z.email().safeParse(email).success) return setError('Enter a valid email address.');
+    if (!z.email().safeParse(email).success) return setError('Introduce un correo electrónico válido.');
     try {
-      const response = await apiRequest<{ message: string }>('/auth/forgot-password', { method: 'POST', ...jsonBody({ email }) });
-      setMessage(response.message);
+      await apiRequest<{ message: string }>('/auth/forgot-password', { method: 'POST', ...jsonBody({ email }) });
+      setMessage('Si la cuenta existe, hemos enviado un enlace de recuperación.');
     } catch (value) {
-      setError(value instanceof Error ? value.message : 'Could not submit the request.');
+      setError(value instanceof Error ? value.message : 'No se pudo enviar la solicitud.');
     }
   }
   return (
-    <AuthCard title="Recover your password" subtitle="We will send a secure one-hour reset link.">
+    <AuthCard title="Recupera tu contraseña" subtitle="Te enviaremos un enlace seguro válido durante una hora.">
       <form className="form-stack" onSubmit={submit}>
-        <label>Email<input name="email" type="email" autoComplete="email" required /></label>
+        <label>Correo electrónico<input name="email" type="email" autoComplete="email" required /></label>
         {message && <p className="success-message">{message}</p>}
         {error && <p className="form-error">{error}</p>}
-        <button className="button primary full">Send reset link</button>
+        <button className="button primary full">Enviar enlace de recuperación</button>
       </form>
-      <div className="auth-links"><Link to="/login">Back to sign in</Link></div>
+      <div className="auth-links"><Link to="/login">Volver al inicio de sesión</Link></div>
     </AuthCard>
   );
 }

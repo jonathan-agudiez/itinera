@@ -62,7 +62,7 @@ export async function registerAdminRoutes(app: FastifyInstance): Promise<void> {
     const { userId } = parseInput(userParams, request.params);
     const input = parseInput(userUpdate, request.body);
     if (userId === admin.id && input.isActive === false) {
-      throw new AppError(422, 'CANNOT_DISABLE_SELF', 'You cannot disable your own administrator account');
+      throw new AppError(422, 'CANNOT_DISABLE_SELF', 'No puedes desactivar tu propia cuenta de administrador');
     }
     const [updated] = await db.update(users).set(input).where(eq(users.id, userId)).returning({
       id: users.id,
@@ -71,7 +71,7 @@ export async function registerAdminRoutes(app: FastifyInstance): Promise<void> {
       role: users.role,
       isActive: users.isActive,
     });
-    if (!updated) notFound('User not found');
+    if (!updated) notFound('Usuario no encontrado');
     if (input.isActive === false) await db.delete(sessions).where(eq(sessions.userId, userId));
     await writeAudit({
       actorUserId: admin.id,
@@ -88,10 +88,10 @@ export async function registerAdminRoutes(app: FastifyInstance): Promise<void> {
     const admin = await requireAdmin(request);
     const { userId } = parseInput(userParams, request.params);
     if (userId === admin.id) {
-      throw new AppError(422, 'CANNOT_DELETE_SELF', 'You cannot delete your own administrator account');
+      throw new AppError(422, 'CANNOT_DELETE_SELF', 'No puedes eliminar tu propia cuenta de administrador');
     }
     const [deleted] = await db.delete(users).where(eq(users.id, userId)).returning({ id: users.id });
-    if (!deleted) notFound('User not found');
+    if (!deleted) notFound('Usuario no encontrado');
     await writeAudit({
       actorUserId: admin.id,
       action: 'ADMIN_USER_DELETED',
@@ -129,7 +129,7 @@ export async function registerAdminRoutes(app: FastifyInstance): Promise<void> {
     const { id } = parseInput(itineraryParams, request.params);
     const input = parseInput(itineraryUpdate, request.body);
     const [current] = await db.select().from(itineraries).where(eq(itineraries.id, id)).limit(1);
-    if (!current) notFound('Itinerary not found');
+    if (!current) notFound('Itinerario no encontrado');
     const startDate = input.startDate ?? current.startDate;
     const endDate = input.endDate ?? current.endDate;
     assertDateRange(startDate, endDate);
@@ -149,7 +149,7 @@ export async function registerAdminRoutes(app: FastifyInstance): Promise<void> {
     const admin = await requireAdmin(request);
     const { id } = parseInput(itineraryParams, request.params);
     const [deleted] = await db.delete(itineraries).where(eq(itineraries.id, id)).returning({ id: itineraries.id });
-    if (!deleted) notFound('Itinerary not found');
+    if (!deleted) notFound('Itinerario no encontrado');
     await writeAudit({
       actorUserId: admin.id,
       action: 'ADMIN_ITINERARY_DELETED',

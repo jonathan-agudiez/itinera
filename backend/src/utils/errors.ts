@@ -10,14 +10,14 @@ export class AppError extends Error {
   }
 }
 
-export function notFound(message = 'Resource not found'): never {
+export function notFound(message = 'Recurso no encontrado'): never {
   throw new AppError(404, 'NOT_FOUND', message);
 }
 
-export function forbidden(message = 'You do not have permission to perform this action'): never {
+export function forbidden(message = 'No tienes permiso para realizar esta acción'): never {
   throw new AppError(403, 'FORBIDDEN', message);
 }
 
-export function unauthorized(message = 'Authentication required'): never {
+export function unauthorized(message = 'Debes iniciar sesión para continuar'): never {
   throw new AppError(401, 'UNAUTHORIZED', message);
 }

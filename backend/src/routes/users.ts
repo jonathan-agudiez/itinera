@@ -35,7 +35,7 @@ export async function registerUserRoutes(app: FastifyInstance): Promise<void> {
     const [user] = await db.select().from(users).where(eq(users.id, auth.id)).limit(1);
 
     if (!user || !(await verifyPassword(user.passwordHash, input.currentPassword))) {
-      throw new AppError(400, 'INVALID_CURRENT_PASSWORD', 'Current password is incorrect');
+      throw new AppError(400, 'INVALID_CURRENT_PASSWORD', 'La contraseña actual no es correcta');
     }
 
     const passwordHash = await hashPassword(input.newPassword);
@@ -52,7 +52,7 @@ export async function registerUserRoutes(app: FastifyInstance): Promise<void> {
       ipAddress: request.ip,
     });
 
-    return { message: 'Password changed. Please sign in again.' };
+    return { message: 'Contraseña cambiada. Inicia sesión de nuevo.' };
   });
 
   app.delete('/api/v1/users/me', async (request, reply) => {
@@ -61,7 +61,7 @@ export async function registerUserRoutes(app: FastifyInstance): Promise<void> {
     const [user] = await db.select().from(users).where(eq(users.id, auth.id)).limit(1);
 
     if (!user || !(await verifyPassword(user.passwordHash, input.password))) {
-      throw new AppError(400, 'INVALID_PASSWORD', 'Password is incorrect');
+      throw new AppError(400, 'INVALID_PASSWORD', 'La contraseña no es correcta');
     }
 
     await writeAudit({
