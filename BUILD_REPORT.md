@@ -1,16 +1,16 @@
-# Informe de compilación — Itinera 2.4.0
+# Informe de compilación — Itinera 2.5.0
 
 Generado: 24 de junio de 2026
 
 ## Cambios verificados
 
-- Agenda por columnas de fecha sin filas horarias.
-- Eliminación de etiquetas ordinales de día.
-- Creación y edición de duración entre 1 y 10 días.
-- Bloqueo seguro al reducir fechas con planes fuera del intervalo.
-- Menú principal iconográfico y accesible.
-- Tarjetas de plan simplificadas.
-- Revisión visual de escritorio, móvil e impresión A4.
+- Rediseño completo inspirado en iOS 27 y Liquid Glass.
+- Navegación flotante adaptada a escritorio y móvil.
+- Hojas inferiores para overlays móviles.
+- Formularios, tarjetas, calendario, administración y acceso unificados visualmente.
+- Modo oscuro y preferencias de accesibilidad.
+- Consolidación de la hoja de estilos sin reglas heredadas duplicadas.
+- Impresión A4 preservada.
 - Sin migraciones nuevas.
 
 ## Backend
@@ -28,9 +28,9 @@ Generado: 24 de junio de 2026
 - Typecheck de TypeScript: correcto.
 - Build de producción con Vite 8.1.0: correcto.
 - 149 módulos transformados.
-- HTML: 0,59 KB; 0,36 KB gzip.
-- CSS: 37,06 KB; 8,11 KB gzip.
-- JavaScript principal: 387,69 KB; 115,42 KB gzip.
+- HTML: 0,72 KB; 0,40 KB gzip.
+- CSS: 37,15 KB; 8,40 KB gzip.
+- JavaScript principal: 387,34 KB; 115,27 KB gzip.
 - `npm audit`: 0 vulnerabilidades.
 - `npm audit --omit=dev`: 0 vulnerabilidades.
 

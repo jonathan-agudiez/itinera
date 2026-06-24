@@ -1,24 +1,27 @@
-# Itinera v2.4.0
+# Itinera v2.5.0
 
-Actualización centrada en simplificar el itinerario y sustituir la estética recargada por una interfaz más sobria y editorial.
+Actualización visual completa que sustituye el diseño editorial anterior por una interfaz inspirada en el lenguaje actual de iOS y Liquid Glass.
 
 ## Incluido
 
-- Eliminación completa de la cuadrícula por horas.
-- Columnas naturales por fecha, con planes ordenados por hora de inicio.
-- Eliminación de «Día 1», «Día 2» y equivalentes en escritorio, móvil e impresión.
-- Creación mediante fecha inicial y número de días.
-- Duración editable entre 1 y 10 días.
-- Protección de datos al acortar un itinerario con planes fuera del nuevo intervalo.
-- Menú principal exclusivamente iconográfico con atributos accesibles y tooltip nativo.
-- Tarjetas de plan sin icono de reloj, categoría, indicador de edición ni adornos innecesarios.
-- Revisión visual de radios, sombras, espacios, tipografía y estados de interacción.
-- Vista móvil diaria simplificada.
-- Impresión compacta en un único A4 apaisado.
+- Fondo ambiental con profundidad y color suave.
+- Barra de navegación flotante translúcida en escritorio.
+- Barra inferior flotante en móvil con soporte para zonas seguras.
+- Material de cristal aplicado con moderación a navegación, overlays y superficies elevadas.
+- Botones en cápsula, controles circulares y estados de pulsación más naturales.
+- Formularios con agrupación visual de estilo nativo.
+- Modales convertidos en hojas inferiores en móvil.
+- Calendario, tarjetas de plan y selector diario rediseñados.
+- Tarjetas de viajes y panel de administración adaptados al mismo sistema.
+- Modo oscuro automático.
+- Respeto por reducción de movimiento y reducción de transparencia.
+- Fallback para navegadores sin desenfoque de fondo.
+- Impresión A4 sin cristal, navegación ni fondos ambientales.
+- Eliminación de CSS visual heredado y duplicado.
 
 ## Compatibilidad
 
 - No hay migraciones nuevas.
 - Se conserva `0002_entry_colors.sql` para instalaciones limpias y despliegues aún no migrados.
-- El backend admite temporalmente el antiguo campo `endDate` para evitar fallos durante el despliegue escalonado.
 - No es necesario cambiar Caddy, Netlify, la URL pública ni CORS.
+- Los datos y credenciales existentes se conservan.

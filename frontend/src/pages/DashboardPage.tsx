@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
+import { Icon } from '../components/Icon';
 import { Modal } from '../components/Modal';
 import { apiRequest, jsonBody } from '../lib/api';
 import { formatDateRange } from '../lib/dates';
@@ -64,7 +65,7 @@ export function DashboardPage() {
           <span className="eyebrow">Tus viajes</span>
           <h1>Itinerarios</h1>
         </div>
-        <button className="button primary" onClick={() => setOpen(true)}>Nuevo itinerario</button>
+        <button className="button primary" onClick={() => setOpen(true)}><Icon name="plus" size={17} />Nuevo itinerario</button>
       </header>
 
       {query.isLoading && <div className="center-state">Cargando…</div>}
@@ -72,7 +73,7 @@ export function DashboardPage() {
       {query.data?.length === 0 && (
         <div className="empty-state">
           <h2>Aún no tienes itinerarios</h2>
-          <button className="button primary" onClick={() => setOpen(true)}>Crear itinerario</button>
+          <button className="button primary" onClick={() => setOpen(true)}><Icon name="plus" size={17} />Crear itinerario</button>
         </div>
       )}
       <div className="trip-grid">

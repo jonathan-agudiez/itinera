@@ -1,4 +1,4 @@
-# Arquitectura de Itinera 2.4.0
+# Arquitectura de Itinera 2.5.0
 
 ## Topología de producción
 
@@ -32,11 +32,21 @@ El mismo conjunto de planes alimenta tres presentaciones:
 
 Los planes siempre se ordenan por hora de inicio y `sort_order`.
 
-## Sistema visual
+## Sistema visual 2.5
 
-La interfaz utiliza iconos únicamente para acciones globales reconocibles. Cada control iconográfico incluye nombre accesible (`aria-label`) y descripción nativa (`title`). Las tarjetas de plan se apoyan en tipografía, hora y color, sin iconografía decorativa.
+La interfaz se apoya en un conjunto único de tokens CSS inspirado en los patrones actuales de iOS:
 
-Cada plan guarda un token de color validado dentro de una paleta cerrada de doce valores. El frontend traduce ese token a fondo, borde y acento visual.
+- Materiales translúcidos reservados para navegación, toolbars, overlays y superficies elevadas.
+- Contenido legible sobre superficies con contraste controlado.
+- Radios concéntricos y controles circulares o en cápsula.
+- Barra flotante superior en escritorio y navegación flotante inferior en móvil.
+- Hojas inferiores para formularios móviles y diálogos centrados en escritorio.
+- Tipografía del sistema con jerarquía clara y espaciado compacto.
+- Modo oscuro mediante `prefers-color-scheme`.
+- Compatibilidad con reducción de movimiento y reducción de transparencia.
+- Fallback opaco cuando el navegador no admite `backdrop-filter`.
+
+Las acciones iconográficas conservan `aria-label` y `title`. Las tarjetas de plan no introducen iconos decorativos y mantienen hora, título, ubicación, descripción y color como únicas señales visuales.
 
 ## Autenticación
 
@@ -54,7 +64,7 @@ Cada ruta privada calcula el acceso en el servidor.
 
 ## Migraciones
 
-La versión 2.4.0 no añade ninguna migración. `0002_entry_colors.sql` continúa formando parte del historial para instalaciones limpias.
+La versión 2.5.0 no añade ninguna migración. `0002_entry_colors.sql` continúa formando parte del historial para instalaciones limpias.
 
 ## Aislamiento del despliegue
 

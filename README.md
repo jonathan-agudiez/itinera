@@ -1,19 +1,21 @@
-# Itinera 2.4.0
+# Itinera 2.5.0
 
 Itinera es una aplicación colaborativa para crear itinerarios de viaje claros, compartibles e imprimibles.
 
-## Novedades de la versión 2.4.0
+## Novedades de la versión 2.5.0
 
-- Se recupera la organización natural por días, sin filas horarias.
-- Las cabeceras muestran únicamente la fecha; desaparecen las etiquetas «Día 1», «Día 2», etc.
-- Al crear un itinerario se indica la fecha inicial y una duración de 1 a 10 días.
-- La duración puede modificarse posteriormente desde la configuración.
-- Si una reducción dejara planes fuera del intervalo, la API la bloquea para evitar pérdida de datos.
-- El menú principal utiliza únicamente iconos con `aria-label` y `title`.
-- Las tarjetas de plan eliminan iconos decorativos, etiquetas y señales de edición innecesarias.
-- Diseño visual más sobrio: menos sombras, radios más contenidos, jerarquía tipográfica y color más discretos.
-- La vista móvil mantiene un día por pantalla y navegación directa entre fechas.
-- La impresión conserva todas las columnas en un único A4 apaisado y prioriza hora y título.
+- Rediseño visual completo inspirado en el lenguaje de interfaz de iOS 27 y Liquid Glass.
+- Barra principal flotante y translúcida en escritorio.
+- Navegación inferior flotante en móvil, respetando la zona segura del dispositivo.
+- Controles circulares, botones en cápsula y jerarquía visual basada en contenido.
+- Formularios agrupados con campos de apariencia nativa y foco accesible.
+- Modales de escritorio con material translúcido y hojas inferiores en móvil.
+- Calendario multidía más limpio, con cabeceras y tarjetas de plan integradas en el material visual.
+- Tarjetas de viaje, administración, acceso y página pública actualizadas con el mismo sistema de diseño.
+- Compatibilidad automática con modo oscuro.
+- Alternativas para reducción de movimiento y reducción de transparencia.
+- Impresión A4 conservada sin efectos translúcidos ni elementos de navegación.
+- Hoja de estilos consolidada: se eliminan capas antiguas y reglas visuales duplicadas.
 
 ## Arquitectura
 
