@@ -1,4 +1,4 @@
-# Arquitectura de Itinera 2.5.1
+# Arquitectura de Itinera 2.5.2
 
 ## Topología de producción
 
@@ -32,7 +32,7 @@ El mismo conjunto de planes alimenta tres presentaciones:
 
 Los planes siempre se ordenan por hora de inicio y `sort_order`.
 
-## Sistema visual 2.5.1
+## Sistema visual 2.5.2
 
 La interfaz se apoya en un conjunto único de tokens CSS inspirado en los patrones actuales de iOS:
 
@@ -66,8 +66,16 @@ Cada ruta privada calcula el acceso en el servidor.
 
 ## Migraciones
 
-La versión 2.5.1 no añade ninguna migración. `0002_entry_colors.sql` continúa formando parte del historial para instalaciones limpias.
+La versión 2.5.2 no añade ninguna migración. `0002_entry_colors.sql` continúa formando parte del historial para instalaciones limpias.
 
 ## Aislamiento del despliegue
 
 Producción utiliza el proyecto Compose `itinera_v2`, el volumen `itinera_v2_postgres_data` y el alias de gateway `itinera-v2-api`. No sustituye los contenedores de Itinera v1 ni de Yieldsoft.
+
+
+## Decisiones visuales de v2.5.2
+
+- Se elimina cualquier adaptación automática a modo oscuro y se declara `color-scheme: light`.
+- Las tarjetas de planes mantienen su paleta y borde, pero usan mayor altura y una escala tipográfica más contrastada.
+- En móvil se conserva una fecha por pantalla y se incrementa la legibilidad de hora, título y descripción.
+- La descripción es obligatoria en la validación del cliente y de la API.

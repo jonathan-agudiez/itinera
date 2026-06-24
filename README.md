@@ -1,20 +1,20 @@
-# Itinera 2.5.1
+# Itinera 2.5.2
 
 Itinera es una aplicación colaborativa para crear itinerarios de viaje claros, compartibles e imprimibles.
 
-## Novedades de la versión 2.5.1
+## Novedades de la versión 2.5.2
 
-- Rediseño exclusivo de las tarjetas de los planes con una jerarquía tipográfica más cercana a iOS:
-  - hora como información secundaria;
-  - título con mayor tamaño y peso;
-  - ubicación y descripción con contraste progresivo;
-  - color integrado de forma discreta mediante una guía lateral.
-- Superficies de plan más limpias, menos brillantes y con sombras contenidas.
-- Estados hover y pulsación más suaves, sin adornos ni iconos adicionales.
-- Eliminación del hueco superior que provocaba desplazamiento vertical innecesario.
-- Overlays más claros y luminosos en modo claro.
-- Impresión A4 rehecha para mostrar exclusivamente el planning, conservando el lenguaje visual de la web.
-- Densidad de impresión adaptativa según el número máximo de planes de cada día.
+- Interfaz fijada exclusivamente en modo claro, también cuando el sistema operativo utiliza modo oscuro.
+- Revisión específica de la experiencia móvil para conservar contraste, legibilidad y superficies claras.
+- Nueva portada con el mensaje «Planifica tu viaje / Aquí, ahora».
+- Eliminación de la frase «Una forma más tranquila de planificar juntos».
+- Tarjetas de planes con mayor altura mínima y una jerarquía tipográfica más marcada:
+  - hora más visible;
+  - título dominante;
+  - ubicación secundaria;
+  - descripción legible y obligatoria.
+- Se conservan sin cambios la cabecera de las columnas, el contenedor del planning, la paleta y el tratamiento de bordes.
+- Sin cambios de base de datos ni migraciones nuevas.
 
 ## Arquitectura
 
@@ -36,7 +36,7 @@ Frontend y backend mantienen sus propios `package.json` y `package-lock.json`.
 - CRUD completo de itinerarios y planes.
 - Itinerarios de entre 1 y 10 días.
 - Vista multidía sin desplazamiento horizontal.
-- Vista móvil diaria.
+- Vista móvil de una fecha por pantalla.
 - Paleta cerrada de doce colores para los planes.
 - Impresión A4 apaisada en una sola hoja.
 - Enlaces públicos de solo lectura.
@@ -44,34 +44,6 @@ Frontend y backend mantienen sus propios `package.json` y `package-lock.json`.
 - Protección frente a modificaciones concurrentes.
 - Límites de frecuencia, cabeceras de seguridad, cookies SameSite y auditoría.
 - Healthchecks de aplicación y base de datos.
-
-## Desarrollo local
-
-Requisitos: Node.js 22.12 o superior, npm y Docker.
-
-```bash
-cp backend/.env.example backend/.env
-cp frontend/.env.example frontend/.env
-
-docker compose -f docker-compose.dev.yml up -d
-
-cd backend
-npm ci
-npm run build
-node dist/db/migrate.js
-node dist/seeds/admin.js
-npm run dev
-```
-
-En otra terminal:
-
-```bash
-cd frontend
-npm ci
-npm run dev
-```
-
-Abrir `http://localhost:5173`.
 
 ## Verificación de calidad
 
@@ -100,4 +72,4 @@ npm audit --omit=dev
 
 ## Actualización de producción
 
-Consulta [DEPLOY.md](DEPLOY.md). La actualización conserva `.env.production`, el volumen de PostgreSQL y todos los datos existentes. No incorpora migraciones.
+Consulta [DEPLOY.md](DEPLOY.md). La actualización conserva `.env.production`, el volumen de PostgreSQL y todos los datos existentes.

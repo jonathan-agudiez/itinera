@@ -1,23 +1,12 @@
-# Itinera v2.5.1
+# Itinera v2.5.2
 
-Actualización visual enfocada únicamente en las tarjetas de los planes, el ajuste superior de la página, la claridad de los overlays y la impresión A4.
+## Cambios
 
-## Incluido
-
-- Hora tratada como información secundaria compacta.
-- Título de plan con mayor contraste, tamaño y peso.
-- Ubicación y descripción con jerarquía progresiva.
-- Guía cromática lateral sutil asociada al color elegido.
-- Superficies más limpias y sombras más contenidas.
-- Estados de interacción discretos y sin nuevos iconos.
-- Eliminación del hueco superior y del desplazamiento vertical innecesario.
-- Overlays más claros en modo claro y coherentes en modo oscuro.
-- Impresión A4 limitada exclusivamente al planning.
-- Planning impreso con estética cercana a la aplicación web.
-- Compresión automática de las tarjetas impresas cuando un día contiene muchos planes.
-
-## Compatibilidad
-
-- No hay migraciones nuevas.
-- No es necesario cambiar Caddy, Netlify, la URL pública ni CORS.
-- Los datos y credenciales existentes se conservan.
+- La interfaz queda fijada exclusivamente en modo claro, también cuando el dispositivo utiliza modo oscuro.
+- Revisión específica de la experiencia móvil para conservar materiales claros, contraste y legibilidad.
+- Nueva portada con el mensaje «Planifica tu viaje / Aquí, ahora».
+- Eliminada la frase «Una forma más tranquila de planificar juntos».
+- Los planes ganan altura mínima, una hora más visible y una jerarquía tipográfica más marcada.
+- La descripción de cada plan pasa a ser obligatoria en frontend y backend.
+- Se conservan sin cambios la cabecera de las columnas, el contenedor del planning, los colores y los bordes de los planes.
+- Sin cambios de esquema ni nuevas migraciones.

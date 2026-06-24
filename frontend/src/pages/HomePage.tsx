@@ -30,8 +30,10 @@ export function HomePage() {
       </header>
       <main className="hero">
         <div className="hero-copy">
-          <span className="eyebrow">Una forma más tranquila de planificar juntos</span>
-          <h1>Tu viaje, organizado como las notas que escribirías de forma natural.</h1>
+          <h1 className="hero-title">
+            <span>Planifica tu viaje</span>
+            <span>Aquí, ahora</span>
+          </h1>
           <p>
             Reúne fechas, horarios y lugares en una vista limpia que puedes editar,
             compartir e imprimir.

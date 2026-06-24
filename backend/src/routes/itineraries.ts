@@ -63,7 +63,7 @@ const entryCreateSchema = z.object({
   startTime: timeSchema,
   endTime: timeSchema.nullable().optional(),
   title: z.string().trim().min(1).max(160),
-  description: z.string().trim().max(10_000).default(''),
+  description: z.string().trim().min(1).max(10_000),
   location: z.string().trim().max(180).default(''),
   category: z.enum(['transport', 'stay', 'food', 'visit', 'activity', 'note']).default('activity'),
   color: z.enum(['sage', 'sky', 'lavender', 'sand', 'coral', 'mint', 'blue', 'rose', 'amber', 'olive', 'slate', 'teal']).default('sage'),

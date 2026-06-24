@@ -23,7 +23,7 @@ const schema = z.object({
   startTime: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/),
   endTime: z.union([z.literal(''), z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/)]),
   title: z.string().trim().min(1).max(160),
-  description: z.string().trim().max(10_000),
+  description: z.string().trim().min(1).max(10_000),
   location: z.string().trim().max(180),
   category: z.enum(['transport', 'stay', 'food', 'visit', 'activity', 'note']),
   color: z.enum(['sage', 'sky', 'lavender', 'sand', 'coral', 'mint', 'blue', 'rose', 'amber', 'olive', 'slate', 'teal']),
@@ -59,12 +59,12 @@ export function EntryForm({
       startTime: form.get('startTime'),
       endTime: form.get('endTime') || '',
       title: form.get('title'),
-      description: form.get('description') || '',
+      description: form.get('description'),
       location: form.get('location') || '',
       category: form.get('category'),
       color: form.get('color'),
     });
-    if (!parsed.success) return setError('Revisa la fecha, la hora, el título y el color.');
+    if (!parsed.success) return setError('Revisa la fecha, la hora, el título, la descripción y el color.');
     if (parsed.data.endTime && parsed.data.endTime <= parsed.data.startTime) {
       return setError('La hora de finalización debe ser posterior a la hora de inicio.');
     }
@@ -101,7 +101,7 @@ export function EntryForm({
           ))}
         </div>
       </fieldset>
-      <label>Descripción<textarea name="description" rows={4} defaultValue={entry?.description || ''} placeholder="Entradas, recordatorios, detalles de la ruta…" /></label>
+      <label>Descripción<textarea name="description" rows={4} defaultValue={entry?.description || ''} placeholder="Entradas, recordatorios, detalles de la ruta…" required /></label>
       {error && <p className="form-error">{error}</p>}
       <div className="modal-actions spread">
         <div>{entry && onDelete && <button type="button" className="button danger-ghost" onClick={() => void onDelete()} disabled={busy}>Eliminar</button>}</div>

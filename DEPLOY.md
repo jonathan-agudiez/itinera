@@ -1,4 +1,4 @@
-# Despliegue de v2.5.1
+# Despliegue de v2.5.2
 
 Esta actualización conserva `.env.production`, usuarios, contraseñas, itinerarios, planes y el volumen PostgreSQL. No incorpora migraciones.
 
@@ -6,7 +6,7 @@ Esta actualización conserva `.env.production`, usuarios, contraseñas, itinerar
 
 ```powershell
 scp -i C:\Users\Atoms\.ssh\yieldsoft_hetzner_ed25519 `
-  "C:\Users\Atoms\Downloads\itinera-v2.5.1.zip" `
+  "C:\Users\Atoms\Downloads\itinera-v2.5.2.zip" `
   root@178.104.205.43:/root/
 ```
 
@@ -19,11 +19,11 @@ ssh -i C:\Users\Atoms\.ssh\yieldsoft_hetzner_ed25519 root@178.104.205.43
 ## 2. Verificación del paquete
 
 ```bash
-ls -lh /root/itinera-v2.5.1.zip
-sha256sum /root/itinera-v2.5.1.zip
+ls -lh /root/itinera-v2.5.2.zip
+sha256sum /root/itinera-v2.5.2.zip
 ```
 
-El valor debe coincidir con `itinera-v2.5.1.zip.sha256`.
+El valor debe coincidir con `itinera-v2.5.2.zip.sha256`.
 
 ## 3. Copia de seguridad de PostgreSQL
 
@@ -31,7 +31,7 @@ El valor debe coincidir con `itinera-v2.5.1.zip.sha256`.
 cd /opt/itinera-v2
 
 mkdir -p /opt/backups/itinera-v2
-BACKUP="/opt/backups/itinera-v2/pre-v2.5.1-$(date +%Y%m%d-%H%M%S).sql"
+BACKUP="/opt/backups/itinera-v2/pre-v2.5.2-$(date +%Y%m%d-%H%M%S).sql"
 
 docker compose \
   --env-file .env.production \
@@ -43,25 +43,41 @@ docker compose \
 ls -lh "$BACKUP"
 ```
 
-## 4. Instalación de la release
+## 4. Instalación segura de la release
+
+Este bloque se detiene antes de `rsync` si el ZIP falta, está dañado o no contiene la estructura esperada.
 
 ```bash
-rm -rf /opt/releases/itinera-v2.5.1
-mkdir -p /opt/releases/itinera-v2.5.1
+set -e
+
+test -f /root/itinera-v2.5.2.zip
+
+rm -rf /opt/releases/itinera-v2.5.2
+mkdir -p /opt/releases/itinera-v2.5.2
 
 unzip -q \
-  /root/itinera-v2.5.1.zip \
-  -d /opt/releases/itinera-v2.5.1
+  /root/itinera-v2.5.2.zip \
+  -d /opt/releases/itinera-v2.5.2
+
+test -f /opt/releases/itinera-v2.5.2/VERSION.txt
+test -f /opt/releases/itinera-v2.5.2/docker-compose.hetzner.yml
+test -f /opt/releases/itinera-v2.5.2/backend/package.json
+test -f /opt/releases/itinera-v2.5.2/frontend/package.json
+test "$(cat /opt/releases/itinera-v2.5.2/VERSION.txt)" = "2.5.2"
+
+cp /opt/itinera-v2/.env.production /root/itinera-v2.env.production.v2.5.2
+chmod 600 /root/itinera-v2.env.production.v2.5.2
 
 rsync -a --delete \
   --exclude='.env.production' \
   --exclude='.env.production.backup-*' \
-  /opt/releases/itinera-v2.5.1/ \
+  /opt/releases/itinera-v2.5.2/ \
   /opt/itinera-v2/
 
-cd /opt/itinera-v2
-chmod 600 .env.production
+cp /root/itinera-v2.env.production.v2.5.2 /opt/itinera-v2/.env.production
+chmod 600 /opt/itinera-v2/.env.production
 
+cd /opt/itinera-v2
 cat VERSION.txt
 stat -c '%a %U:%G %n' .env.production
 ```
@@ -69,7 +85,7 @@ stat -c '%a %U:%G %n' .env.production
 Valores esperados:
 
 ```text
-2.5.1
+2.5.2
 600 root:root .env.production
 ```
 
@@ -157,11 +173,11 @@ curl -sS -o /dev/null -w "HTTP %{http_code}\n" \
   https://app.yieldsoft.net
 ```
 
-El endpoint `live` debe indicar `"version":"2.5.1"`; `ready`, Itinera v1 y Yieldsoft deben responder correctamente.
+El endpoint `live` debe indicar `"version":"2.5.2"`; `ready`, Itinera v1 y Yieldsoft deben responder correctamente.
 
 ## 8. Actualización de GitHub y Netlify
 
-1. Descomprimir `itinera-v2.5.1.zip` en Windows.
+1. Descomprimir `itinera-v2.5.2.zip` en Windows.
 2. Abrir el repositorio de Itinera en GitHub.
 3. Seleccionar **Add file → Upload files**.
 4. Entrar en la carpeta extraída y arrastrar todo su contenido, no la carpeta contenedora.
@@ -169,16 +185,16 @@ El endpoint `live` debe indicar `"version":"2.5.1"`; `ready`, Itinera v1 y Yield
 6. Usar el mensaje:
 
 ```text
-v2.5.1: tarjetas iOS y nueva impresión A4
+v2.5.2: modo claro, nueva portada y tarjetas más legibles
 ```
 
 Netlify desplegará el frontend automáticamente. No es necesario modificar Caddy, la URL pública ni CORS.
 
 ## 9. Comprobación visual
 
-- Recargar Netlify con `Ctrl + F5`.
-- Comprobar la jerarquía de hora, título, ubicación y descripción en las tarjetas.
-- Confirmar que no aparece hueco ni scroll vacío en la parte superior.
-- Abrir cualquier overlay y comprobar que el fondo resulta más claro.
-- Imprimir en A4 apaisado con gráficos de fondo activados y encabezados/pies desactivados.
-- Confirmar que la impresión muestra exclusivamente el cuadro de planning.
+- Recargar `https://poca-broma.netlify.app` con `Ctrl + F5`.
+- Comprobar en móvil que toda la interfaz permanece en modo claro aunque el teléfono tenga activado el modo oscuro.
+- Confirmar que cada plan tiene más altura y que hora, título y descripción presentan una jerarquía clara.
+- Crear y editar un plan para verificar que la descripción es obligatoria.
+- Confirmar que la cabecera de las columnas, el contenedor, los colores y los bordes no han cambiado.
+- Revisar la portada y comprobar que muestra «Planifica tu viaje / Aquí, ahora».

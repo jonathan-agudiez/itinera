@@ -2,7 +2,7 @@
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
-  color-scheme: light;
+  color-scheme: light only;
 
   --ink: #1c1c1e;
   --muted: #6e6e73;
@@ -248,6 +248,7 @@ h2 { line-height: 1.06; }
 .hero { width: min(1220px, calc(100% - 32px)); margin: 0 auto; padding: clamp(4rem, 9vw, 8.5rem) 0 4rem; }
 .hero-copy { max-width: 980px; }
 .hero-copy h1 { max-width: 1080px; }
+.hero-title span { display: block; }
 .hero-copy > p { max-width: 720px; color: var(--muted); font-size: clamp(1.05rem, 2vw, 1.28rem); line-height: 1.62; }
 .hero-actions { margin-top: 1.6rem; }
 .hero-preview {
@@ -407,10 +408,12 @@ textarea { resize: vertical; }
   position: relative;
   width: 100%;
   min-width: 0;
+  min-height: 112px;
   display: grid;
-  gap: .24rem;
-  margin: 0 0 .5rem;
-  padding: .78rem .82rem .82rem .98rem;
+  align-content: start;
+  gap: .34rem;
+  margin: 0 0 .56rem;
+  padding: 1rem 1rem 1.02rem 1.16rem;
   overflow: hidden;
   border: .5px solid color-mix(in srgb, var(--entry-border, #a8c5af) 24%, rgba(60,60,67,.12));
   border-radius: 16px;
@@ -423,9 +426,9 @@ textarea { resize: vertical; }
 .entry-card::before {
   content: "";
   position: absolute;
-  top: .72rem;
-  bottom: .72rem;
-  left: .48rem;
+  top: .9rem;
+  bottom: .9rem;
+  left: .54rem;
   width: 3px;
   border-radius: 999px;
   background: var(--swatch, #7fa089);
@@ -440,8 +443,8 @@ textarea { resize: vertical; }
 .entry-card:active { transform: scale(.992); }
 .entry-card .entry-time {
   color: rgba(60,60,67,.72);
-  font-size: .66rem;
-  font-weight: 640;
+  font-size: .8rem;
+  font-weight: 680;
   font-variant-numeric: tabular-nums;
   letter-spacing: -.012em;
   line-height: 1.05;
@@ -450,8 +453,8 @@ textarea { resize: vertical; }
   min-width: 0;
   overflow-wrap: anywhere;
   color: #1c1c1e;
-  font-size: .91rem;
-  font-weight: 720;
+  font-size: 1.04rem;
+  font-weight: 750;
   letter-spacing: -.024em;
   line-height: 1.14;
 }
@@ -460,8 +463,8 @@ textarea { resize: vertical; }
   min-width: 0;
   overflow: hidden;
   color: rgba(60,60,67,.72);
-  font-size: .68rem;
-  font-weight: 520;
+  font-size: .74rem;
+  font-weight: 540;
   line-height: 1.28;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -472,9 +475,9 @@ textarea { resize: vertical; }
   margin: .05rem 0 0;
   overflow: hidden;
   color: rgba(60,60,67,.68);
-  font-size: .69rem;
-  font-weight: 400;
-  line-height: 1.34;
+  font-size: .76rem;
+  font-weight: 430;
+  line-height: 1.4;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   -webkit-box-orient: vertical;
@@ -487,10 +490,10 @@ textarea { resize: vertical; }
 .calendar-grid[data-density="compact"] .day-date small { font-size: .54rem; }
 .calendar-grid[data-density="compact"] .day-add { width: 1.7rem; height: 1.7rem; }
 .calendar-grid[data-density="compact"] .day-content { padding: .38rem; }
-.calendar-grid[data-density="compact"] .entry-card { gap: .14rem; margin-bottom: .34rem; padding: .52rem .48rem .55rem .72rem; border-radius: 11px; }
-.calendar-grid[data-density="compact"] .entry-card::before { top: .48rem; bottom: .48rem; left: .34rem; width: 2px; }
-.calendar-grid[data-density="compact"] .entry-card .entry-time { font-size: .52rem; }
-.calendar-grid[data-density="compact"] .entry-card .entry-title { font-size: .69rem; line-height: 1.12; }
+.calendar-grid[data-density="compact"] .entry-card { min-height: 88px; gap: .18rem; margin-bottom: .38rem; padding: .66rem .54rem .68rem .78rem; border-radius: 12px; }
+.calendar-grid[data-density="compact"] .entry-card::before { top: .58rem; bottom: .58rem; left: .36rem; width: 2px; }
+.calendar-grid[data-density="compact"] .entry-card .entry-time { font-size: .61rem; }
+.calendar-grid[data-density="compact"] .entry-card .entry-title { font-size: .76rem; line-height: 1.14; }
 .calendar-grid[data-density="compact"] .entry-card .entry-location, .calendar-grid[data-density="compact"] .entry-card p { display: none; }
 
 .entry-card[data-color="sage"], .color-option[data-color="sage"] { --entry-bg: #e5f1e8; --entry-border: #96b79f; --swatch: #73a582; }
@@ -610,12 +613,12 @@ tbody tr:last-child td { border-bottom: 0; }
   .mobile-day-header .day-date strong { font-size: 1.78rem; }
   .mobile-day-content { min-height: 280px; padding: .72rem; }
   .mobile-empty-day { min-height: 220px; }
-  .mobile-entry-card { gap: .3rem; margin-bottom: .62rem; padding: .92rem .95rem .96rem 1.16rem; border-radius: 18px; }
-  .mobile-entry-card::before { top: .84rem; bottom: .84rem; left: .58rem; width: 3px; }
-  .mobile-entry-card .entry-time { font-size: .72rem; font-weight: 650; }
-  .mobile-entry-card .entry-title { font-size: 1.02rem; font-weight: 730; line-height: 1.12; }
-  .mobile-entry-card .entry-location { font-size: .76rem; font-weight: 520; }
-  .mobile-entry-card p { font-size: .8rem; line-height: 1.38; -webkit-line-clamp: 3; }
+  .mobile-entry-card { min-height: 120px; gap: .38rem; margin-bottom: .68rem; padding: 1.06rem 1.02rem 1.08rem 1.24rem; border-radius: 19px; }
+  .mobile-entry-card::before { top: .96rem; bottom: .96rem; left: .6rem; width: 3px; }
+  .mobile-entry-card .entry-time { font-size: .84rem; font-weight: 690; }
+  .mobile-entry-card .entry-title { font-size: 1.12rem; font-weight: 760; line-height: 1.13; }
+  .mobile-entry-card .entry-location { font-size: .79rem; font-weight: 540; }
+  .mobile-entry-card p { font-size: .86rem; line-height: 1.42; -webkit-line-clamp: 3; }
 }
 
 @media (max-width: 720px) {
@@ -753,43 +756,7 @@ tbody tr:last-child td { border-bottom: 0; }
   .topbar, .topnav, .landing-header, .shared-header, .auth-card, .auth-brand, .calendar-shell, .mobile-day-toolbar, .mobile-day-card, .modal-card, .trip-card, .panel-card, .stat-card, .table-card { background: rgba(255,255,255,.94); }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    color-scheme: dark;
-    --ink: #f5f5f7;
-    --muted: #aeaeb2;
-    --muted-2: #8e8e93;
-    --line: rgba(235,235,245,.13);
-    --line-strong: rgba(235,235,245,.22);
-    --surface: rgba(32,32,38,.72);
-    --surface-strong: rgba(42,42,49,.9);
-    --surface-soft: rgba(44,44,52,.55);
-    --glass: rgba(38,38,46,.66);
-    --glass-strong: rgba(46,46,54,.82);
-    --system-bg: #111114;
-    --accent-soft: rgba(10,132,255,.18);
-  }
-  body {
-    background:
-      radial-gradient(circle at 8% -8%, rgba(20,119,194,.4), transparent 30rem),
-      radial-gradient(circle at 94% 8%, rgba(99,72,180,.32), transparent 32rem),
-      radial-gradient(circle at 48% 104%, rgba(30,124,94,.24), transparent 34rem),
-      linear-gradient(180deg, #18181d 0%, #111114 58%, #0b0b0d 100%);
-  }
-  .topbar, .topnav, .landing-header, .shared-header, .auth-brand, .auth-card, .trip-card, .calendar-shell, .mobile-day-toolbar, .mobile-day-card, .modal-card, .panel-card, .stat-card, .table-card { border-color: rgba(255,255,255,.12); background: rgba(34,34,42,.62); box-shadow: inset 0 1px 0 rgba(255,255,255,.11), 0 18px 48px rgba(0,0,0,.28); }
-  .button, .icon-button, .action-icon, .day-add, .mobile-day-arrow { border-color: rgba(255,255,255,.12); background: rgba(68,68,78,.55); color: #f5f5f7; box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 5px 18px rgba(0,0,0,.16); }
-  .button:hover, .icon-button:hover, .action-icon:hover, .day-add:hover, .mobile-day-arrow:hover { background: rgba(82,82,94,.72); }
-  input, textarea, select { color: #f5f5f7; background: rgba(118,118,128,.22); }
-  input:focus, textarea:focus, select:focus { background: rgba(64,64,74,.85); }
-  label { color: #d1d1d6; }
-  .day-column { background: rgba(20,20,24,.16); }
-  .day-header, .mobile-day-header { background: rgba(40,40,48,.46); }
-  .entry-card { color: #1c1c1e; }
-  .entry-card .entry-title { color: #1c1c1e; }
-  .entry-card .entry-time, .entry-card .entry-location, .entry-card p { color: rgba(28,28,30,.66); }
-  .modal-backdrop { background: rgba(12,12,16,.22); -webkit-backdrop-filter: blur(18px) saturate(135%); backdrop-filter: blur(18px) saturate(135%); }
-  .tab-bar button.active { color: #fff; background: rgba(94,94,104,.72); }
-}
+
 
 @media print {
   @page { size: A4 landscape; margin: 7mm; }

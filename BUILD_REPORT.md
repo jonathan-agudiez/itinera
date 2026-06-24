@@ -1,16 +1,19 @@
-# Informe de compilación — Itinera 2.5.1
+# Informe de compilación — Itinera 2.5.2
 
 Generado: 24 de junio de 2026
 
 ## Cambios verificados
 
-- Tarjetas de planes rediseñadas con jerarquía tipográfica y superficies de estilo iOS.
-- Sin iconos decorativos adicionales dentro de las tarjetas.
-- Corrección del espacio superior y del scroll vertical no deseado.
-- Overlays aclarados en modo claro.
-- Impresión A4 completamente rehecha para mostrar únicamente el planning.
-- Densidad de impresión adaptativa según la cantidad de planes.
-- Sin cambios funcionales ni migraciones nuevas.
+- Modo claro forzado en escritorio y móvil.
+- Eliminación completa de la adaptación CSS automática a modo oscuro.
+- Metadatos del navegador configurados únicamente para superficies claras.
+- Portada actualizada a «Planifica tu viaje / Aquí, ahora».
+- Eliminación del antiguo antetítulo de la portada.
+- Tarjetas de planes con mayor altura, hora más visible y mayor contraste tipográfico.
+- Ajuste móvil específico de altura, espaciado y escala tipográfica de los planes.
+- Descripción obligatoria tanto en el formulario como en la API.
+- Cabeceras de columnas, contenedor del planning, colores y bordes conservados.
+- Sin migraciones nuevas.
 
 ## Backend
 
@@ -27,9 +30,9 @@ Generado: 24 de junio de 2026
 - Typecheck de TypeScript: correcto.
 - Build de producción con Vite 8.1.0: correcto.
 - 149 módulos transformados.
-- HTML: 0,72 KB; 0,40 KB gzip.
-- CSS: 39,56 KB; 8,76 KB gzip.
-- JavaScript principal: 387,48 KB; 115,33 KB gzip.
+- HTML: 0,64 KB; 0,37 KB gzip.
+- CSS: 37,96 KB; 8,44 KB gzip.
+- JavaScript principal: 387,46 KB; 115,31 KB gzip.
 - `npm audit`: 0 vulnerabilidades.
 - `npm audit --omit=dev`: 0 vulnerabilidades.
 
