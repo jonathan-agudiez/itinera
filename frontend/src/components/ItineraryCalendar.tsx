@@ -65,7 +65,7 @@ export function ItineraryCalendar({
         <span className="entry-time">{time}</span>
         <strong className="entry-title">{entry.title}</strong>
         {entry.location && <small className="entry-location">{entry.location}</small>}
-        {entry.description && <p>{entry.description}</p>}
+        {entry.description && <p className="entry-description">{entry.description}</p>}
       </button>
     );
   }

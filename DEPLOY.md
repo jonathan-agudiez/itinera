@@ -1,4 +1,4 @@
-# Despliegue de v2.5.2
+# Despliegue de v2.5.3
 
 Esta actualización conserva `.env.production`, usuarios, contraseñas, itinerarios, planes y el volumen PostgreSQL. No incorpora migraciones.
 
@@ -6,7 +6,7 @@ Esta actualización conserva `.env.production`, usuarios, contraseñas, itinerar
 
 ```powershell
 scp -i C:\Users\Atoms\.ssh\yieldsoft_hetzner_ed25519 `
-  "C:\Users\Atoms\Downloads\itinera-v2.5.2.zip" `
+  "C:\Users\Atoms\Downloads\itinera-v2.5.3.zip" `
   root@178.104.205.43:/root/
 ```
 
@@ -19,11 +19,11 @@ ssh -i C:\Users\Atoms\.ssh\yieldsoft_hetzner_ed25519 root@178.104.205.43
 ## 2. Verificación del paquete
 
 ```bash
-ls -lh /root/itinera-v2.5.2.zip
-sha256sum /root/itinera-v2.5.2.zip
+ls -lh /root/itinera-v2.5.3.zip
+sha256sum /root/itinera-v2.5.3.zip
 ```
 
-El valor debe coincidir con `itinera-v2.5.2.zip.sha256`.
+El valor debe coincidir con `itinera-v2.5.3.zip.sha256`.
 
 ## 3. Copia de seguridad de PostgreSQL
 
@@ -31,7 +31,7 @@ El valor debe coincidir con `itinera-v2.5.2.zip.sha256`.
 cd /opt/itinera-v2
 
 mkdir -p /opt/backups/itinera-v2
-BACKUP="/opt/backups/itinera-v2/pre-v2.5.2-$(date +%Y%m%d-%H%M%S).sql"
+BACKUP="/opt/backups/itinera-v2/pre-v2.5.3-$(date +%Y%m%d-%H%M%S).sql"
 
 docker compose \
   --env-file .env.production \
@@ -45,36 +45,37 @@ ls -lh "$BACKUP"
 
 ## 4. Instalación segura de la release
 
-Este bloque se detiene antes de `rsync` si el ZIP falta, está dañado o no contiene la estructura esperada.
+El bloque se detiene antes de `rsync` si el ZIP falta o la release no contiene la estructura esperada.
 
 ```bash
 set -e
 
-test -f /root/itinera-v2.5.2.zip
+test -f /root/itinera-v2.5.3.zip
 
-rm -rf /opt/releases/itinera-v2.5.2
-mkdir -p /opt/releases/itinera-v2.5.2
+rm -rf /opt/releases/itinera-v2.5.3
+mkdir -p /opt/releases/itinera-v2.5.3
 
 unzip -q \
-  /root/itinera-v2.5.2.zip \
-  -d /opt/releases/itinera-v2.5.2
+  /root/itinera-v2.5.3.zip \
+  -d /opt/releases/itinera-v2.5.3
 
-test -f /opt/releases/itinera-v2.5.2/VERSION.txt
-test -f /opt/releases/itinera-v2.5.2/docker-compose.hetzner.yml
-test -f /opt/releases/itinera-v2.5.2/backend/package.json
-test -f /opt/releases/itinera-v2.5.2/frontend/package.json
-test "$(cat /opt/releases/itinera-v2.5.2/VERSION.txt)" = "2.5.2"
+test -f /opt/releases/itinera-v2.5.3/VERSION.txt
+test -f /opt/releases/itinera-v2.5.3/docker-compose.hetzner.yml
+test -f /opt/releases/itinera-v2.5.3/backend/package.json
+test -f /opt/releases/itinera-v2.5.3/frontend/package.json
+test "$(cat /opt/releases/itinera-v2.5.3/VERSION.txt)" = "2.5.3"
+test -f /opt/itinera-v2/.env.production
 
-cp /opt/itinera-v2/.env.production /root/itinera-v2.env.production.v2.5.2
-chmod 600 /root/itinera-v2.env.production.v2.5.2
+cp /opt/itinera-v2/.env.production /root/itinera-v2.env.production.v2.5.3
+chmod 600 /root/itinera-v2.env.production.v2.5.3
 
 rsync -a --delete \
   --exclude='.env.production' \
   --exclude='.env.production.backup-*' \
-  /opt/releases/itinera-v2.5.2/ \
+  /opt/releases/itinera-v2.5.3/ \
   /opt/itinera-v2/
 
-cp /root/itinera-v2.env.production.v2.5.2 /opt/itinera-v2/.env.production
+cp /root/itinera-v2.env.production.v2.5.3 /opt/itinera-v2/.env.production
 chmod 600 /opt/itinera-v2/.env.production
 
 cd /opt/itinera-v2
@@ -85,7 +86,7 @@ stat -c '%a %U:%G %n' .env.production
 Valores esperados:
 
 ```text
-2.5.2
+2.5.3
 600 root:root .env.production
 ```
 
@@ -173,11 +174,11 @@ curl -sS -o /dev/null -w "HTTP %{http_code}\n" \
   https://app.yieldsoft.net
 ```
 
-El endpoint `live` debe indicar `"version":"2.5.2"`; `ready`, Itinera v1 y Yieldsoft deben responder correctamente.
+El endpoint `live` debe indicar `"version":"2.5.3"`; `ready`, Itinera v1 y Yieldsoft deben responder correctamente.
 
 ## 8. Actualización de GitHub y Netlify
 
-1. Descomprimir `itinera-v2.5.2.zip` en Windows.
+1. Descomprimir `itinera-v2.5.3.zip` en Windows.
 2. Abrir el repositorio de Itinera en GitHub.
 3. Seleccionar **Add file → Upload files**.
 4. Entrar en la carpeta extraída y arrastrar todo su contenido, no la carpeta contenedora.
@@ -185,7 +186,7 @@ El endpoint `live` debe indicar `"version":"2.5.2"`; `ready`, Itinera v1 y Yield
 6. Usar el mensaje:
 
 ```text
-v2.5.2: modo claro, nueva portada y tarjetas más legibles
+v2.5.3: tarjetas de planes y tipografía refinadas
 ```
 
 Netlify desplegará el frontend automáticamente. No es necesario modificar Caddy, la URL pública ni CORS.
@@ -193,8 +194,8 @@ Netlify desplegará el frontend automáticamente. No es necesario modificar Cadd
 ## 9. Comprobación visual
 
 - Recargar `https://poca-broma.netlify.app` con `Ctrl + F5`.
-- Comprobar en móvil que toda la interfaz permanece en modo claro aunque el teléfono tenga activado el modo oscuro.
-- Confirmar que cada plan tiene más altura y que hora, título y descripción presentan una jerarquía clara.
-- Crear y editar un plan para verificar que la descripción es obligatoria.
-- Confirmar que la cabecera de las columnas, el contenedor, los colores y los bordes no han cambiado.
-- Revisar la portada y comprobar que muestra «Planifica tu viaje / Aquí, ahora».
+- Confirmar que la hora es mayor y ligera.
+- Confirmar que la descripción aparece también con diez columnas.
+- Comprobar que las tarjetas tienen más altura y el mismo tratamiento pastel, borde blanco y sombra que la home.
+- Revisar que las cabeceras de fecha son ligeramente mayores, sin cambios en el contenedor del planning.
+- Comprobar el mismo acabado en móvil.

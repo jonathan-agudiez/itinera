@@ -1,18 +1,18 @@
-# Informe de compilación — Itinera 2.5.2
+# Informe de compilación — Itinera 2.5.3
 
 Generado: 24 de junio de 2026
 
 ## Cambios verificados
 
-- Modo claro forzado en escritorio y móvil.
-- Eliminación completa de la adaptación CSS automática a modo oscuro.
-- Metadatos del navegador configurados únicamente para superficies claras.
-- Portada actualizada a «Planifica tu viaje / Aquí, ahora».
-- Eliminación del antiguo antetítulo de la portada.
-- Tarjetas de planes con mayor altura, hora más visible y mayor contraste tipográfico.
-- Ajuste móvil específico de altura, espaciado y escala tipográfica de los planes.
-- Descripción obligatoria tanto en el formulario como en la API.
-- Cabeceras de columnas, contenedor del planning, colores y bordes conservados.
+- Tarjetas de planes con mayor altura mínima en escritorio, vista compacta de diez días y móvil.
+- Hora ampliada y con peso tipográfico ligero.
+- Título con mayor jerarquía visual.
+- Descripción visible en la vista compacta, con peso ligero y hasta tres líneas.
+- Ubicación secundaria y ligera; se oculta solo en la vista compacta para priorizar la descripción.
+- Borde blanco translúcido, fondo pastel y sombra equivalentes a las tarjetas de la portada.
+- Eliminación de la línea lateral cromática de las tarjetas.
+- Cabeceras de fecha ligeramente ampliadas sin modificar su layout ni el contenedor del planning.
+- Descripción obligatoria conservada en frontend y backend.
 - Sin migraciones nuevas.
 
 ## Backend
@@ -31,11 +31,11 @@ Generado: 24 de junio de 2026
 - Build de producción con Vite 8.1.0: correcto.
 - 149 módulos transformados.
 - HTML: 0,64 KB; 0,37 KB gzip.
-- CSS: 37,96 KB; 8,44 KB gzip.
-- JavaScript principal: 387,46 KB; 115,31 KB gzip.
+- CSS: 37,74 KB; 8,34 KB gzip.
+- JavaScript principal: 387,49 KB; 115,31 KB gzip.
 - `npm audit`: 0 vulnerabilidades.
 - `npm audit --omit=dev`: 0 vulnerabilidades.
 
 ## Base de datos
 
-No se modifica el esquema. Se conservan usuarios, sesiones, itinerarios, colaboradores, planes y colores existentes.
+No se modifica el esquema. Se conservan usuarios, sesiones, itinerarios, colaboradores, planes, descripciones y colores existentes.

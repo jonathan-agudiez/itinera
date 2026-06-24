@@ -1,19 +1,20 @@
-# Itinera 2.5.2
+# Itinera 2.5.3
 
 Itinera es una aplicación colaborativa para crear itinerarios de viaje claros, compartibles e imprimibles.
 
-## Novedades de la versión 2.5.2
+## Novedades de la versión 2.5.3
 
-- Interfaz fijada exclusivamente en modo claro, también cuando el sistema operativo utiliza modo oscuro.
-- Revisión específica de la experiencia móvil para conservar contraste, legibilidad y superficies claras.
-- Nueva portada con el mensaje «Planifica tu viaje / Aquí, ahora».
-- Eliminación de la frase «Una forma más tranquila de planificar juntos».
-- Tarjetas de planes con mayor altura mínima y una jerarquía tipográfica más marcada:
-  - hora más visible;
-  - título dominante;
-  - ubicación secundaria;
-  - descripción legible y obligatoria.
-- Se conservan sin cambios la cabecera de las columnas, el contenedor del planning, la paleta y el tratamiento de bordes.
+Esta versión se concentra únicamente en el acabado de los planes dentro del planning:
+
+- Tarjetas con mayor altura mínima y más espacio interior.
+- Hora de mayor tamaño y peso ligero.
+- Título dominante, con un contraste claro frente a la descripción.
+- Descripción siempre visible en la web, incluso en itinerarios de diez días, y obligatoria al crear o editar un plan.
+- Ubicación y descripción con pesos tipográficos más ligeros.
+- Fondos, bordes y sombras coherentes con las tarjetas pastel de la portada.
+- Eliminación de la línea lateral de color para evitar que cada plan parezca un componente distinto a los de la home.
+- Cabeceras de fecha ligeramente mayores, sin alterar su estructura ni el contenedor del planning.
+- Ajustes equivalentes en la vista móvil.
 - Sin cambios de base de datos ni migraciones nuevas.
 
 ## Arquitectura
@@ -38,6 +39,7 @@ Frontend y backend mantienen sus propios `package.json` y `package-lock.json`.
 - Vista multidía sin desplazamiento horizontal.
 - Vista móvil de una fecha por pantalla.
 - Paleta cerrada de doce colores para los planes.
+- Descripción obligatoria en todos los planes nuevos y editados.
 - Impresión A4 apaisada en una sola hoja.
 - Enlaces públicos de solo lectura.
 - Colaboradores con permiso de lectura o edición.

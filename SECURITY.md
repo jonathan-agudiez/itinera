@@ -1,4 +1,4 @@
-# Notas de seguridad — Itinera 2.5.2
+# Notas de seguridad — Itinera 2.5.3
 
 ## Controles implementados
 
@@ -29,6 +29,6 @@ Argon2id, los límites de frecuencia y la protección de sesiones permanecen act
 No se debe subir `.env.production`. El repositorio contiene únicamente `.env.production.example`.
 
 
-## Validación de planes en v2.5.2
+## Validación de planes en v2.5.3
 
 La descripción de una actividad es obligatoria tanto en el cliente como en la API. Esta modificación no altera autenticación, sesiones, Argon2id ni controles de autorización.
