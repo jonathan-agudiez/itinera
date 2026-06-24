@@ -1,18 +1,17 @@
-# Itinera 2.1.0
+# Itinera 2.3.0
 
-Itinera es una aplicación colaborativa para crear itinerarios de viaje claros, visuales y fáciles de compartir.
+Itinera es una aplicación colaborativa para crear itinerarios de viaje visuales, horarios y fáciles de compartir.
 
-## Novedades de la versión 2.1.0
+## Novedades de la versión 2.3.0
 
-- Interfaz completa en castellano.
-- Fechas, días de la semana, meses, categorías, permisos y roles adaptados a español.
-- Calendario sin desplazamiento horizontal: las columnas se ajustan al contenedor y se redistribuyen de forma responsiva.
-- Diseño compacto automático para itinerarios con muchos días.
-- Botón **Imprimir itinerario** en la vista privada y en los enlaces compartidos.
-- Maquetación exclusiva para impresión en A4 apaisado, sin navegación, formularios ni paneles de gestión.
-- Cabecera de impresión con título, destino, fechas y descripción.
-- Mensajes de validación, conexión y API en castellano.
-- Correos de recuperación de contraseña en castellano.
+- El itinerario se representa como una agenda: columnas por día y filas horarias desde las 05:00 hasta las 00:00.
+- La versión móvil conserva un solo día por pantalla y muestra el mismo horario vertical por horas.
+- Colaboración y eliminación dejan de ocupar espacio permanente: ahora se abren desde iconos en overlays.
+- Acciones principales con iconos de trazo limpio y menos texto visual.
+- Paleta visual de 12 colores coherentes para cada plan.
+- Los colores se guardan en PostgreSQL mediante la migración `0002_entry_colors.sql`.
+- La política de contraseña acepta claves desde 6 caracteres, incluidos PIN numéricos de 6 cifras.
+- Impresión compacta en una sola página A4 apaisada con todas las columnas y las 20 filas horarias.
 
 ## Arquitectura
 
@@ -24,21 +23,22 @@ Itinera es una aplicación colaborativa para crear itinerarios de viaje claros, 
 - **Contraseñas:** Argon2id.
 - **Producción:** frontend estático en Netlify; API y PostgreSQL en Hetzner; Caddy como gateway TLS compartido.
 
-Frontend y backend mantienen sus propios `package.json` y `package-lock.json`, sin workspaces ni dependencias acopladas.
+Frontend y backend mantienen sus propios `package.json` y `package-lock.json`.
 
 ## Funcionalidades
 
 - Registro, inicio y cierre de sesión.
 - Recuperación y cambio de contraseña.
-- Eliminación permanente de cuenta.
 - Panel de usuario y panel de administración.
-- CRUD completo de itinerarios y actividades.
-- Calendario por días con edición mediante doble clic.
-- Impresión profesional del itinerario en A4.
+- CRUD completo de itinerarios y planes.
+- Agenda horaria multidía sin desplazamiento horizontal.
+- Vista móvil diaria con navegación anterior/siguiente.
+- Planes coloreables con 12 tonos.
+- Impresión A4 apaisada en una sola hoja.
 - Enlaces públicos de solo lectura.
 - Colaboradores con permiso de lectura o edición.
 - Protección frente a modificaciones concurrentes.
-- Límites de frecuencia, cabeceras de seguridad, cookies SameSite y registro de auditoría.
+- Límites de frecuencia, cabeceras de seguridad, cookies SameSite y auditoría.
 - Healthchecks de aplicación y base de datos.
 
 ## Desarrollo local
@@ -96,4 +96,4 @@ npm audit --omit=dev
 
 ## Actualización de producción
 
-Consulta [DEPLOY.md](DEPLOY.md). La actualización conserva `.env.production`, la base de datos y el volumen de PostgreSQL existentes.
+Consulta [DEPLOY.md](DEPLOY.md). La actualización conserva `.env.production` y el volumen de PostgreSQL. La API aplica automáticamente la migración de color antes de arrancar.

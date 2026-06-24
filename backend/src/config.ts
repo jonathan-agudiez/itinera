@@ -15,7 +15,7 @@ const envSchema = z.object({
   SESSION_TTL_DAYS: z.coerce.number().int().min(1).max(365).default(30),
   DATABASE_URL: z.string().min(1),
   ADMIN_EMAIL: z.email().optional(),
-  ADMIN_PASSWORD: z.string().min(12).optional(),
+  ADMIN_PASSWORD: z.string().min(6).optional(),
   ADMIN_DISPLAY_NAME: z.string().min(1).max(100).default('Administrator'),
   RESEND_API_KEY: z.string().optional().default(''),
   MAIL_FROM: z.string().min(3).default('Itinera <no-reply@example.com>'),

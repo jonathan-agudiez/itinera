@@ -1,31 +1,27 @@
-# Security notes
+# Notas de seguridad
 
-## Implemented controls
+## Controles implementados
 
-- Argon2id password hashing.
-- Opaque session cookies; raw session tokens are not persisted.
-- `HttpOnly`, `Secure` and `SameSite=Lax` production cookies.
-- CORS allow-list and Origin verification for mutating requests.
-- Global and authentication-specific rate limits.
-- Helmet security headers and Caddy edge headers.
-- Body-size and request-time limits.
-- Uniform forgotten-password responses to reduce account enumeration.
-- One-hour, single-use password reset tokens stored only as hashes.
-- Session revocation after password change, password reset, account disablement or account deletion.
-- Administrator self-delete/self-disable protection.
-- Server-side permission checks for every private resource.
-- Optimistic locking for collaborative entry updates.
-- Audit log for important account, sharing and administrative actions.
-- Database port is not published in production.
+- Hash de contraseñas mediante Argon2id.
+- Sesiones opacas; los tokens sin procesar no se persisten.
+- Cookies `HttpOnly`, `Secure` y `SameSite=Lax` en producción.
+- Lista permitida de CORS y comprobación de origen en operaciones mutables.
+- Límites globales y específicos para autenticación.
+- Cabeceras Helmet y Caddy.
+- Tokens de recuperación de un solo uso, con caducidad y almacenados como hash.
+- Revocación de sesiones tras cambio o recuperación de contraseña.
+- Permisos comprobados en el servidor.
+- Bloqueo optimista en la edición colaborativa.
+- Auditoría de acciones relevantes.
+- PostgreSQL no publica su puerto en producción.
+- Los colores de planes se limitan a doce tokens validados.
 
-## Secrets
+## Política de contraseñas de esta instalación
 
-Never commit `.env.production`. Generate production passwords using a cryptographically secure generator. The repository contains only `.env.production.example`.
+A petición del propietario, registro, cambio y recuperación aceptan claves desde 6 caracteres, por lo que un PIN numérico de 6 cifras es válido. Esta política es adecuada únicamente para el uso privado previsto y ofrece menos resistencia frente a intentos de adivinación que una contraseña larga.
 
-## Email
+Argon2id, los límites de frecuencia y la protección de sesiones permanecen activos. Para una exposición pública amplia se recomienda recuperar una longitud mínima superior.
 
-Password recovery uses the Resend HTTPS API when `RESEND_API_KEY` is configured. This avoids an SMTP client dependency. Without a key, reset links are logged by the API for controlled pre-production testing and must not be considered a production mail solution.
+## Secretos
 
-## Reporting
-
-Before each release run both production audits, typechecks, backend tests and production builds documented in `README.md`.
+No se debe subir `.env.production`. El repositorio contiene únicamente `.env.production.example`.

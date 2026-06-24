@@ -1,4 +1,5 @@
 import { useEffect, type ReactNode } from 'react';
+import { Icon } from './Icon';
 
 export function Modal({ title, children, onClose }: { title: string; children: ReactNode; onClose: () => void }) {
   useEffect(() => {
@@ -17,7 +18,7 @@ export function Modal({ title, children, onClose }: { title: string; children: R
             <span className="eyebrow">Itinera</span>
             <h2>{title}</h2>
           </div>
-          <button className="icon-button" type="button" onClick={onClose} aria-label="Cerrar">×</button>
+          <button className="icon-button" type="button" onClick={onClose} aria-label="Cerrar" title="Cerrar"><Icon name="x" size={18} /></button>
         </header>
         {children}
       </section>

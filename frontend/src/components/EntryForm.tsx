@@ -1,7 +1,23 @@
 import { useState, type FormEvent } from 'react';
 import { z } from 'zod';
 import { categoryLabels } from '../lib/labels';
-import type { Category, ItineraryEntry } from '../types';
+import type { Category, ItineraryEntry, PlanColor } from '../types';
+import { Icon } from './Icon';
+
+export const planColors: Array<{ value: PlanColor; label: string }> = [
+  { value: 'sage', label: 'Salvia' },
+  { value: 'sky', label: 'Cielo' },
+  { value: 'lavender', label: 'Lavanda' },
+  { value: 'sand', label: 'Arena' },
+  { value: 'coral', label: 'Coral' },
+  { value: 'mint', label: 'Menta' },
+  { value: 'blue', label: 'Azul' },
+  { value: 'rose', label: 'Rosa' },
+  { value: 'amber', label: 'Ámbar' },
+  { value: 'olive', label: 'Oliva' },
+  { value: 'slate', label: 'Pizarra' },
+  { value: 'teal', label: 'Turquesa' },
+];
 
 const schema = z.object({
   entryDate: z.iso.date(),
@@ -11,12 +27,14 @@ const schema = z.object({
   description: z.string().trim().max(10_000),
   location: z.string().trim().max(180),
   category: z.enum(['transport', 'stay', 'food', 'visit', 'activity', 'note']),
+  color: z.enum(['sage', 'sky', 'lavender', 'sand', 'coral', 'mint', 'blue', 'rose', 'amber', 'olive', 'slate', 'teal']),
 });
 
 export type EntryInput = Omit<z.infer<typeof schema>, 'endTime'> & { endTime: string | null; version?: number };
 
 export function EntryForm({
   date,
+  initialStartTime,
   entry,
   busy,
   onSave,
@@ -24,6 +42,7 @@ export function EntryForm({
   onCancel,
 }: {
   date: string;
+  initialStartTime?: string;
   entry?: ItineraryEntry;
   busy: boolean;
   onSave: (input: EntryInput) => Promise<void>;
@@ -44,8 +63,9 @@ export function EntryForm({
       description: form.get('description') || '',
       location: form.get('location') || '',
       category: form.get('category'),
+      color: form.get('color'),
     });
-    if (!parsed.success) return setError('Revisa la fecha, la hora y el título.');
+    if (!parsed.success) return setError('Revisa la fecha, la hora, el título y el color.');
     if (parsed.data.endTime && parsed.data.endTime <= parsed.data.startTime) {
       return setError('La hora de finalización debe ser posterior a la hora de inicio.');
     }
@@ -64,17 +84,29 @@ export function EntryForm({
     <form className="form-stack" onSubmit={submit}>
       <div className="form-grid three">
         <label>Fecha<input name="entryDate" type="date" defaultValue={entry?.entryDate || date} required /></label>
-        <label>Empieza<input name="startTime" type="time" defaultValue={entry?.startTime.slice(0, 5) || '09:00'} required /></label>
+        <label>Empieza<input name="startTime" type="time" defaultValue={entry?.startTime.slice(0, 5) || initialStartTime || '09:00'} required /></label>
         <label>Termina<input name="endTime" type="time" defaultValue={entry?.endTime?.slice(0, 5) || ''} /></label>
       </div>
       <label>Título<input name="title" defaultValue={entry?.title || ''} placeholder="Ferry a Bellagio" autoFocus required /></label>
       <label>Ubicación<input name="location" defaultValue={entry?.location || ''} placeholder="Embarcadero de Varenna" /></label>
       <label>Categoría<select name="category" defaultValue={entry?.category || 'activity'}>{(['activity', 'visit', 'transport', 'stay', 'food', 'note'] as Category[]).map((category) => <option key={category} value={category}>{categoryLabels[category]}</option>)}</select></label>
+      <fieldset className="color-fieldset">
+        <legend><Icon name="palette" size={16} /> Color del plan</legend>
+        <div className="color-palette" role="radiogroup" aria-label="Color del plan">
+          {planColors.map((color) => (
+            <label className="color-option" data-color={color.value} key={color.value} title={color.label}>
+              <input type="radio" name="color" value={color.value} defaultChecked={(entry?.color || 'sage') === color.value} />
+              <span className="color-swatch" />
+              <span className="sr-only">{color.label}</span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
       <label>Descripción<textarea name="description" rows={4} defaultValue={entry?.description || ''} placeholder="Entradas, recordatorios, detalles de la ruta…" /></label>
       {error && <p className="form-error">{error}</p>}
       <div className="modal-actions spread">
-        <div>{entry && onDelete && <button type="button" className="button danger-ghost" onClick={() => void onDelete()} disabled={busy}>Eliminar</button>}</div>
-        <div className="inline-actions"><button type="button" className="button ghost" onClick={onCancel}>Cancelar</button><button className="button primary" disabled={busy}>{busy ? 'Guardando…' : 'Guardar'}</button></div>
+        <div>{entry && onDelete && <button type="button" className="button danger-ghost icon-label-button" onClick={() => void onDelete()} disabled={busy}><Icon name="trash-2" /><span>Eliminar</span></button>}</div>
+        <div className="inline-actions"><button type="button" className="button ghost icon-label-button" onClick={onCancel}><Icon name="x" /><span>Cancelar</span></button><button className="button primary icon-label-button" disabled={busy}><Icon name="save" /><span>{busy ? 'Guardando…' : 'Guardar'}</span></button></div>
       </div>
     </form>
   );

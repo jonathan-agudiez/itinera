@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { apiRequest, jsonBody } from '../lib/api';
 import { useAuth } from '../lib/auth';
 
-const passwordSchema = z.string().min(12).regex(/[a-z]/).regex(/[A-Z]/).regex(/[0-9]/);
+const passwordSchema = z.string().min(6).max(128);
 
 export function AccountPage() {
   const { user, refresh, logout } = useAuth();
@@ -29,7 +29,7 @@ export function AccountPage() {
     const form = new FormData(event.currentTarget);
     const currentPassword = String(form.get('currentPassword') || '');
     const newPassword = String(form.get('newPassword') || '');
-    if (!passwordSchema.safeParse(newPassword).success) return setError('La nueva contraseña debe tener al menos 12 caracteres, con mayúsculas, minúsculas y números.');
+    if (!passwordSchema.safeParse(newPassword).success) return setError('La nueva contraseña debe tener al menos 6 caracteres.');
     try {
       await apiRequest('/users/me/change-password', { method: 'POST', ...jsonBody({ currentPassword, newPassword }) });
       await logout(); navigate('/login');
@@ -63,7 +63,7 @@ export function AccountPage() {
         <h2>Cambiar contraseña</h2>
         <form className="form-stack" onSubmit={changePassword}>
           <label>Contraseña actual<input name="currentPassword" type="password" autoComplete="current-password" required /></label>
-          <label>Nueva contraseña<input name="newPassword" type="password" autoComplete="new-password" minLength={12} required /></label>
+          <label>Nueva contraseña<input name="newPassword" type="password" autoComplete="new-password" minLength={6} required /></label>
           <button className="button primary align-start">Cambiar contraseña</button>
         </form>
       </section>

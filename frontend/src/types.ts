@@ -2,6 +2,7 @@ export type Role = 'USER' | 'ADMIN';
 export type Access = 'OWNER' | 'WRITE' | 'READ' | 'ADMIN' | 'PUBLIC';
 export type Permission = 'READ' | 'WRITE';
 export type Category = 'transport' | 'stay' | 'food' | 'visit' | 'activity' | 'note';
+export type PlanColor = 'sage' | 'sky' | 'lavender' | 'sand' | 'coral' | 'mint' | 'blue' | 'rose' | 'amber' | 'olive' | 'slate' | 'teal';
 
 export interface User {
   id: string;
@@ -38,6 +39,7 @@ export interface ItineraryEntry {
   description: string;
   location: string;
   category: Category;
+  color: PlanColor;
   sortOrder: number;
   version: number;
   createdAt: string;

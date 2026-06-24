@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { AuthCard } from '../components/AuthCard';
 import { apiRequest, jsonBody } from '../lib/api';
 
-const password = z.string().min(12).regex(/[a-z]/).regex(/[A-Z]/).regex(/[0-9]/);
+const password = z.string().min(6).max(128);
 
 export function ResetPasswordPage() {
   const [params] = useSearchParams();
@@ -24,9 +24,9 @@ export function ResetPasswordPage() {
     }
   }
   return (
-    <AuthCard title="Elige una nueva contraseña" subtitle="Utiliza una contraseña segura que no emplees en otros servicios.">
+    <AuthCard title="Elige una nueva contraseña" subtitle="Elige una clave sencilla de recordar, con un mínimo de 6 caracteres.">
       <form className="form-stack" onSubmit={submit}>
-        <label>Nueva contraseña<input name="password" type="password" autoComplete="new-password" minLength={12} required /></label>
+        <label>Nueva contraseña<input name="password" type="password" autoComplete="new-password" minLength={6} required /></label>
         {message && <p className="success-message">{message}</p>}
         {error && <p className="form-error">{error}</p>}
         <button className="button primary full">Actualizar contraseña</button>

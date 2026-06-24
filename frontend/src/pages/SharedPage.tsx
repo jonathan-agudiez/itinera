@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link, useParams } from 'react-router-dom';
+import { Icon } from '../components/Icon';
 import { ItineraryCalendar } from '../components/ItineraryCalendar';
 import { apiRequest } from '../lib/api';
 import { formatDateRange } from '../lib/dates';
@@ -32,9 +33,9 @@ export function SharedPage() {
     <main className="shared-page">
       <header className="shared-header">
         <Link to="/" className="brand"><span className="brand-mark">I</span><span>Itinera</span></Link>
-        <div className="inline-actions">
-          <button className="button ghost print-action" onClick={() => window.print()}>Imprimir itinerario</button>
-          <Link className="button ghost" to="/register">Crear el mío</Link>
+        <div className="inline-actions shared-actions">
+          <button className="action-icon print-action" onClick={() => window.print()} aria-label="Imprimir itinerario" title="Imprimir"><Icon name="printer" /></button>
+          <Link className="action-icon" to="/register" aria-label="Crear mi itinerario" title="Crear el mío"><Icon name="plus" /></Link>
         </div>
       </header>
       <section className="shared-title">

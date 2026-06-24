@@ -1,49 +1,57 @@
-# Architecture
+# Arquitectura de Itinera 2.3.0
 
-## Runtime topology
+## Topología de producción
 
 ```text
-Browser
+Navegador
   │
-  ├── static application ── Netlify / React + Vite
+  ├── aplicación estática ── Netlify / React + Vite
   │
-  └── /api/* proxy ─────── HTTPS / Caddy on Hetzner
-                               │
-                               └── itinera-v2-api:4000 / Fastify
-                                         │
-                                         └── private PostgreSQL 17
+  └── /api/* ─────────────── HTTPS / Caddy en Hetzner
+                                  │
+                                  └── itinera-v2-api:4000 / Fastify
+                                            │
+                                            └── PostgreSQL 17 privado
 ```
 
-## Separation of concerns
+## Separación de responsabilidades
 
-`frontend/` is a static single-page application. It has no server runtime and therefore cannot access database secrets. Netlify only serves compiled assets and proxies `/api/*` to the HTTPS API.
+`frontend/` es una SPA estática sin secretos de base de datos. `backend/` controla autenticación, permisos, validación, transacciones, auditoría y persistencia.
 
-`backend/` owns authentication, authorisation, validation, transactions, audit records and persistence. It never trusts permissions or IDs supplied by the client.
+## Modelo de agenda
 
-## Authentication model
+El mismo conjunto de planes alimenta tres presentaciones:
 
-The browser receives an opaque random session token in an `HttpOnly`, `SameSite=Lax`, secure cookie. Only a SHA-256 hash is stored in `sessions`. A database leak therefore does not directly reveal usable browser tokens. Passwords are processed with Argon2id.
+- Escritorio: matriz con una columna por día y veinte filas horarias, de 05:00 a 00:00.
+- Móvil: un solo día por pantalla con una línea temporal vertical y las mismas veinte franjas.
+- Impresión: matriz completa compactada en A4 apaisado y limitada a una sola página.
 
-State-changing requests are protected through SameSite cookies and an explicit Origin allow-list. CORS only permits configured frontend origins.
+Los planes se agrupan por la hora de inicio. Las horas entre 01:00 y 04:59 se muestran en la fila final de 00:00 para evitar que un plan existente quede oculto.
 
-## Sharing model
+## Colores de planes
 
-A public sharing token is random and transmitted only when generated. PostgreSQL stores its SHA-256 hash and a short non-secret hint. Rotating the link invalidates the previous URL immediately.
+Cada plan guarda un token de color validado dentro de una paleta cerrada de doce valores. El frontend traduce ese token a fondo, borde y acento visual. No se aceptan colores arbitrarios enviados por el cliente.
 
-## Authorisation
+## Autenticación
 
-- `OWNER`: full itinerary, collaborator and share-link management.
-- `WRITE`: read and activity CRUD.
-- `READ`: read-only registered access.
-- `PUBLIC`: read-only token access.
-- `ADMIN`: global management.
+El navegador recibe un token de sesión opaco en una cookie `HttpOnly`, `Secure` y `SameSite=Lax`. PostgreSQL almacena únicamente su hash SHA-256. Las contraseñas continúan procesándose mediante Argon2id.
 
-Every protected API route determines access server-side.
+La política de uso privado permite contraseñas desde 6 caracteres. La reducción de complejidad no modifica el hash Argon2id, los límites de frecuencia ni la revocación de sesiones.
 
-## Data integrity
+## Compartición y autorización
 
-The database enforces unique emails, foreign keys, cascading deletion, date-range constraints, time-range constraints and indexed access paths. Activity updates carry a version field to detect conflicting simultaneous edits.
+- `OWNER`: control completo.
+- `WRITE`: lectura y CRUD de planes.
+- `READ`: lectura registrada.
+- `PUBLIC`: lectura mediante token.
+- `ADMIN`: gestión global.
 
-## Deployment isolation
+Cada ruta privada calcula el acceso en el servidor.
 
-Production uses compose project `itinera_v2`, network `itinera_v2_private`, volume `itinera_v2_postgres_data` and gateway alias `itinera-v2-api`. These names do not replace the v1 containers or database.
+## Migraciones
+
+`backend/src/db/migrate.ts` aplica en orden todos los SQL no registrados en `schema_migrations`. La versión 2.3.0 añade `0002_entry_colors.sql`, que crea `itinerary_entries.color` con valor inicial `sage`.
+
+## Aislamiento del despliegue
+
+Producción utiliza el proyecto Compose `itinera_v2`, la red privada propia, el volumen `itinera_v2_postgres_data` y el alias de gateway `itinera-v2-api`. No sustituye los contenedores de Itinera v1 ni de Yieldsoft.

@@ -5,11 +5,8 @@ export const uuidSchema = z.uuid();
 export const emailSchema = z.email().max(320).transform((value) => value.trim().toLowerCase());
 export const passwordSchema = z
   .string()
-  .min(12, 'La contraseña debe tener al menos 12 caracteres')
-  .max(128)
-  .regex(/[a-z]/, 'La contraseña debe contener una letra minúscula')
-  .regex(/[A-Z]/, 'La contraseña debe contener una letra mayúscula')
-  .regex(/[0-9]/, 'La contraseña debe contener un número');
+  .min(6, 'La contraseña debe tener al menos 6 caracteres')
+  .max(128);
 
 export const dateSchema = z.iso.date();
 export const timeSchema = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/);

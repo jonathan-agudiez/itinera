@@ -8,7 +8,7 @@ import { useAuth } from '../lib/auth';
 const schema = z.object({
   displayName: z.string().trim().min(2).max(100),
   email: z.email(),
-  password: z.string().min(12).regex(/[a-z]/).regex(/[A-Z]/).regex(/[0-9]/),
+  password: z.string().min(6).max(128),
 });
 
 export function RegisterPage() {
@@ -22,7 +22,7 @@ export function RegisterPage() {
     setError('');
     const form = new FormData(event.currentTarget);
     const parsed = schema.safeParse({ displayName: form.get('displayName'), email: form.get('email'), password: form.get('password') });
-    if (!parsed.success) return setError('Usa un correo válido y una contraseña de 12 caracteres con mayúsculas, minúsculas y números.');
+    if (!parsed.success) return setError('Usa un correo válido y una contraseña de al menos 6 caracteres.');
     setBusy(true);
     try {
       await apiRequest('/auth/register', { method: 'POST', ...jsonBody(parsed.data) });
@@ -40,8 +40,8 @@ export function RegisterPage() {
       <form className="form-stack" onSubmit={submit} noValidate>
         <label>Nombre<input name="displayName" autoComplete="name" required /></label>
         <label>Correo electrónico<input name="email" type="email" autoComplete="email" required /></label>
-        <label>Contraseña<input name="password" type="password" autoComplete="new-password" minLength={12} required /></label>
-        <p className="form-hint">Al menos 12 caracteres, con una mayúscula, una minúscula y un número.</p>
+        <label>Contraseña<input name="password" type="password" autoComplete="new-password" minLength={6} required /></label>
+        <p className="form-hint">Mínimo 6 caracteres. Puedes utilizar un PIN numérico de 6 cifras.</p>
         {error && <p className="form-error">{error}</p>}
         <button className="button primary full" disabled={busy}>{busy ? 'Creando cuenta…' : 'Crear cuenta'}</button>
       </form>

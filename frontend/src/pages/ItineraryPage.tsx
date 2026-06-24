@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { z } from 'zod';
 import { EntryForm, type EntryInput } from '../components/EntryForm';
 import { ItineraryCalendar } from '../components/ItineraryCalendar';
+import { Icon } from '../components/Icon';
 import { Modal } from '../components/Modal';
 import { apiRequest, jsonBody } from '../lib/api';
 import { formatDateRange } from '../lib/dates';
@@ -24,8 +25,10 @@ export function ItineraryPage() {
   const { id = '' } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [editor, setEditor] = useState<{ date: string; entry?: ItineraryEntry } | null>(null);
+  const [editor, setEditor] = useState<{ date: string; startTime?: string; entry?: ItineraryEntry } | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [collaborationOpen, setCollaborationOpen] = useState(false);
+  const [dangerOpen, setDangerOpen] = useState(false);
   const [shareUrl, setShareUrl] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -134,63 +137,71 @@ export function ItineraryPage() {
     <div className="itinerary-page">
       <header className="itinerary-heading">
         <div>
-          <button className="back-link" onClick={() => navigate('/dashboard')}>← Todos los viajes</button>
+          <button className="back-link icon-label-button" onClick={() => navigate('/dashboard')}><Icon name="arrow-left" size={16} /><span>Viajes</span></button>
           <span className="eyebrow">{data.itinerary.destination || 'Itinerario'}</span>
           <h1>{data.itinerary.title}</h1>
           <p className="muted">{formatDateRange(data.itinerary.startDate, data.itinerary.endDate)} · {accessLabels[data.access]}</p>
         </div>
-        <div className="inline-actions itinerary-actions">
-          <button className="button ghost print-action" onClick={() => window.print()}>Imprimir itinerario</button>
-          {canManage && <button className="button ghost" onClick={() => setSettingsOpen(true)}>Configuración</button>}
-          {canManage && <button className="button primary" onClick={() => void rotateShare()}>Nuevo enlace compartido</button>}
+        <div className="inline-actions itinerary-actions" aria-label="Acciones del itinerario">
+          <button className="action-icon print-action" onClick={() => window.print()} aria-label="Imprimir itinerario" title="Imprimir"><Icon name="printer" /></button>
+          {canManage && <button className="action-icon" onClick={() => setCollaborationOpen(true)} aria-label="Gestionar colaboradores" title="Colaboradores"><Icon name="users" /></button>}
+          {canManage && <button className="action-icon" onClick={() => setSettingsOpen(true)} aria-label="Configurar itinerario" title="Configuración"><Icon name="settings" /></button>}
+          {canManage && <button className="action-icon accent" onClick={() => void rotateShare()} aria-label="Crear nuevo enlace compartido" title="Nuevo enlace compartido"><Icon name="share-2" /></button>}
+          {canManage && <button className="action-icon danger-icon" onClick={() => setDangerOpen(true)} aria-label="Abrir zona de peligro" title="Eliminar itinerario"><Icon name="trash-2" /></button>}
         </div>
       </header>
 
-      {message && <div className="notice success">{message}{shareUrl && <button className="text-button" onClick={() => void navigator.clipboard?.writeText(shareUrl)}>Copiar de nuevo</button>}</div>}
+      {message && <div className="notice success">{message}{shareUrl && <button className="action-icon compact" onClick={() => void navigator.clipboard?.writeText(shareUrl)} aria-label="Copiar enlace de nuevo" title="Copiar"><Icon name="copy" size={16} /></button>}</div>}
       {error && <div className="notice error">{error}</div>}
 
-      <ItineraryCalendar itinerary={data.itinerary} entries={data.entries} canWrite={canWrite} onCreate={(date) => setEditor({ date })} onEdit={(entry) => setEditor({ date: entry.entryDate, entry })} />
-
-      {canManage && (
-        <section className="management-grid">
-          <div className="panel-card">
-            <span className="eyebrow">Colaboración</span>
-            <h2>Personas con acceso</h2>
-            <form className="collaborator-form" onSubmit={addCollaborator}>
-              <input name="email" type="email" placeholder="persona@ejemplo.com" required />
-              <select name="permission" defaultValue="READ"><option value="READ">{permissionLabels.READ}</option><option value="WRITE">{permissionLabels.WRITE}</option></select>
-              <button className="button primary">Añadir</button>
-            </form>
-            <div className="collaborator-list">
-              {data.collaborators.length === 0 && <p className="muted">Todavía no hay colaboradores.</p>}
-              {data.collaborators.map((person) => (
-                <div className="collaborator-row" key={person.userId}>
-                  <div><strong>{person.displayName}</strong><small>{person.email}</small></div>
-                  <select value={person.permission} onChange={(event) => void updateCollaborator(person.userId, event.target.value as Permission)}><option value="READ">{permissionLabels.READ}</option><option value="WRITE">{permissionLabels.WRITE}</option></select>
-                  <button className="icon-button" onClick={() => void removeCollaborator(person.userId)} aria-label="Eliminar colaborador">×</button>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="panel-card danger-panel">
-            <span className="eyebrow">Zona de peligro</span>
-            <h2>Eliminar itinerario</h2>
-            <p className="muted">Esta acción elimina permanentemente todas las actividades y colaboraciones.</p>
-            <button className="button danger" onClick={() => void deleteItinerary()}>Eliminar itinerario</button>
-          </div>
-        </section>
-      )}
+      <ItineraryCalendar itinerary={data.itinerary} entries={data.entries} canWrite={canWrite} onCreate={(date, startTime) => setEditor({ date, startTime })} onEdit={(entry) => setEditor({ date: entry.entryDate, startTime: entry.startTime.slice(0, 5), entry })} />
 
       {editor && (
         <Modal title={editor.entry ? 'Editar plan' : 'Añadir plan'} onClose={() => setEditor(null)}>
           <EntryForm
             date={editor.date}
+            initialStartTime={editor.startTime}
             entry={editor.entry}
             busy={saveEntry.isPending || deleteEntry.isPending}
             onCancel={() => setEditor(null)}
             onSave={(input) => saveEntry.mutateAsync({ input, entry: editor.entry }).then(() => undefined)}
             onDelete={editor.entry ? () => deleteEntry.mutateAsync(editor.entry!.id).then(() => undefined) : undefined}
           />
+        </Modal>
+      )}
+
+
+      {collaborationOpen && (
+        <Modal title="Colaboradores" onClose={() => setCollaborationOpen(false)}>
+          <p className="muted modal-intro">Invita a tus colegas y decide si pueden consultar o editar el viaje.</p>
+          <form className="collaborator-form" onSubmit={addCollaborator}>
+            <input name="email" type="email" placeholder="persona@ejemplo.com" aria-label="Correo del colaborador" required />
+            <select name="permission" defaultValue="READ" aria-label="Permiso"><option value="READ">{permissionLabels.READ}</option><option value="WRITE">{permissionLabels.WRITE}</option></select>
+            <button className="button primary icon-label-button"><Icon name="plus" /><span>Añadir</span></button>
+          </form>
+          <div className="collaborator-list">
+            {data.collaborators.length === 0 && <div className="overlay-empty"><Icon name="users" size={24} /><p>Todavía no hay colaboradores.</p></div>}
+            {data.collaborators.map((person) => (
+              <div className="collaborator-row" key={person.userId}>
+                <div><strong>{person.displayName}</strong><small>{person.email}</small></div>
+                <select value={person.permission} onChange={(event) => void updateCollaborator(person.userId, event.target.value as Permission)} aria-label={`Permiso de ${person.displayName}`}><option value="READ">{permissionLabels.READ}</option><option value="WRITE">{permissionLabels.WRITE}</option></select>
+                <button className="icon-button danger-icon" onClick={() => void removeCollaborator(person.userId)} aria-label={`Eliminar a ${person.displayName}`} title="Eliminar colaborador"><Icon name="trash-2" size={16} /></button>
+              </div>
+            ))}
+          </div>
+        </Modal>
+      )}
+
+      {dangerOpen && (
+        <Modal title="Eliminar itinerario" onClose={() => setDangerOpen(false)}>
+          <div className="danger-overlay">
+            <span className="danger-overlay-icon"><Icon name="trash-2" size={26} /></span>
+            <div><h3>Esta acción es permanente</h3><p>Se eliminarán el itinerario, todos sus planes y las colaboraciones asociadas.</p></div>
+          </div>
+          <div className="modal-actions">
+            <button type="button" className="button ghost icon-label-button" onClick={() => setDangerOpen(false)}><Icon name="x" /><span>Cancelar</span></button>
+            <button type="button" className="button danger icon-label-button" onClick={() => void deleteItinerary()}><Icon name="trash-2" /><span>Eliminar definitivamente</span></button>
+          </div>
         </Modal>
       )}
 

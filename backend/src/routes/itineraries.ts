@@ -50,6 +50,7 @@ const entryCreateSchema = z.object({
   description: z.string().trim().max(10_000).default(''),
   location: z.string().trim().max(180).default(''),
   category: z.enum(['transport', 'stay', 'food', 'visit', 'activity', 'note']).default('activity'),
+  color: z.enum(['sage', 'sky', 'lavender', 'sand', 'coral', 'mint', 'blue', 'rose', 'amber', 'olive', 'slate', 'teal']).default('sage'),
   sortOrder: z.number().int().min(-10_000).max(10_000).default(0),
 });
 

@@ -140,6 +140,7 @@ export const itineraryEntries = pgTable(
     description: text('description').notNull().default(''),
     location: varchar('location', { length: 180 }).notNull().default(''),
     category: varchar('category', { length: 40 }).notNull().default('activity'),
+    color: varchar('color', { length: 24 }).notNull().default('sage'),
     sortOrder: integer('sort_order').notNull().default(0),
     version: integer('version').notNull().default(1),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),

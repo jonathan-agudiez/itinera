@@ -65,11 +65,11 @@ export function AdminPage() {
           <table><thead><tr><th>Usuario</th><th>Rol</th><th>Estado</th><th>Creado</th><th /></tr></thead><tbody>
             {users.data?.map((user) => (
               <tr key={user.id}>
-                <td><strong>{user.displayName}</strong><small>{user.email}</small></td>
-                <td><select value={user.role} onChange={(event) => void updateUser(user.id, { role: event.target.value as Role })}><option value="USER">{roleLabels.USER}</option><option value="ADMIN">{roleLabels.ADMIN}</option></select></td>
-                <td><label className="switch-label"><input type="checkbox" checked={user.isActive} onChange={(event) => void updateUser(user.id, { isActive: event.target.checked })} /><span>{user.isActive ? 'Activo' : 'Desactivado'}</span></label></td>
-                <td>{formatDate(user.createdAt.slice(0, 10))}</td>
-                <td><button className="button danger-ghost small" onClick={() => void deleteUser(user)}>Eliminar</button></td>
+                <td data-label="Usuario"><strong>{user.displayName}</strong><small>{user.email}</small></td>
+                <td data-label="Rol"><select value={user.role} onChange={(event) => void updateUser(user.id, { role: event.target.value as Role })}><option value="USER">{roleLabels.USER}</option><option value="ADMIN">{roleLabels.ADMIN}</option></select></td>
+                <td data-label="Estado"><label className="switch-label"><input type="checkbox" checked={user.isActive} onChange={(event) => void updateUser(user.id, { isActive: event.target.checked })} /><span>{user.isActive ? 'Activo' : 'Desactivado'}</span></label></td>
+                <td data-label="Creado">{formatDate(user.createdAt.slice(0, 10))}</td>
+                <td data-label="Acciones"><button className="button danger-ghost small" onClick={() => void deleteUser(user)}>Eliminar</button></td>
               </tr>
             ))}
           </tbody></table>
@@ -79,11 +79,11 @@ export function AdminPage() {
           <table><thead><tr><th>Itinerario</th><th>Propietario</th><th>Fechas</th><th>Compartido</th><th /></tr></thead><tbody>
             {trips.data?.map((trip) => (
               <tr key={trip.id}>
-                <td><strong>{trip.title}</strong><small>{trip.destination}</small></td>
-                <td><strong>{trip.ownerName}</strong><small>{trip.ownerEmail}</small></td>
-                <td>{formatDateRange(trip.startDate, trip.endDate)}</td>
-                <td>{trip.publicShareEnabled ? 'Activado' : 'Desactivado'}</td>
-                <td><button className="button danger-ghost small" onClick={() => void deleteTrip(trip)}>Eliminar</button></td>
+                <td data-label="Itinerario"><strong>{trip.title}</strong><small>{trip.destination}</small></td>
+                <td data-label="Propietario"><strong>{trip.ownerName}</strong><small>{trip.ownerEmail}</small></td>
+                <td data-label="Fechas">{formatDateRange(trip.startDate, trip.endDate)}</td>
+                <td data-label="Compartido">{trip.publicShareEnabled ? 'Activado' : 'Desactivado'}</td>
+                <td data-label="Acciones"><button className="button danger-ghost small" onClick={() => void deleteTrip(trip)}>Eliminar</button></td>
               </tr>
             ))}
           </tbody></table>
