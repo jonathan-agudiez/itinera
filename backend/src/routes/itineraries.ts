@@ -12,6 +12,8 @@ import {
 } from '../db/schema.js';
 import { requireUser, type AuthUser } from '../services/auth.js';
 import { writeAudit } from '../services/audit.js';
+import { notifyAdmin } from '../services/mail.js';
+import { escapeHtml } from '../utils/html.js';
 import { createOpaqueToken, hashToken, normalizeEmail } from '../utils/crypto.js';
 import { AppError, forbidden, notFound } from '../utils/errors.js';
 import {
@@ -146,6 +148,95 @@ function validateTimes(startTime: string, endTime?: string | null): void {
   }
 }
 
+function copyTitle(title: string): string {
+  const suffix = ' (copia)';
+  const base = title.endsWith(suffix) ? title.slice(0, -suffix.length) : title;
+  return `${base.slice(0, 140 - suffix.length)}${suffix}`;
+}
+
+async function copyItineraryForUser(
+  source: Itinerary,
+  auth: AuthUser,
+  ipAddress: string,
+): Promise<Awaited<ReturnType<typeof bundle>>> {
+  const shareToken = createOpaqueToken(36);
+  const [sourceOwner] = await db
+    .select({ email: users.email, displayName: users.displayName })
+    .from(users)
+    .where(eq(users.id, source.ownerId))
+    .limit(1);
+
+  const copied = await db.transaction(async (transaction) => {
+    const sourceEntries = await transaction
+      .select()
+      .from(itineraryEntries)
+      .where(eq(itineraryEntries.itineraryId, source.id))
+      .orderBy(
+        asc(itineraryEntries.entryDate),
+        asc(itineraryEntries.startTime),
+        asc(itineraryEntries.sortOrder),
+      );
+
+    const [created] = await transaction
+      .insert(itineraries)
+      .values({
+        ownerId: auth.id,
+        title: copyTitle(source.title),
+        destination: source.destination,
+        description: source.description,
+        startDate: source.startDate,
+        endDate: source.endDate,
+        timezone: source.timezone,
+        publicShareEnabled: false,
+        shareTokenHash: hashToken(shareToken),
+        shareTokenHint: shareToken.slice(-8),
+      })
+      .returning();
+
+    if (!created) throw new AppError(500, 'COPY_FAILED', 'No se pudo copiar el itinerario');
+
+    if (sourceEntries.length > 0) {
+      await transaction.insert(itineraryEntries).values(
+        sourceEntries.map((entry) => ({
+          itineraryId: created.id,
+          entryDate: entry.entryDate,
+          startTime: entry.startTime,
+          endTime: entry.endTime,
+          title: entry.title,
+          description: entry.description,
+          location: entry.location,
+          category: entry.category,
+          color: entry.color,
+          sortOrder: entry.sortOrder,
+          version: 1,
+        })),
+      );
+    }
+
+    return { itinerary: created, entryCount: sourceEntries.length };
+  });
+
+  await writeAudit({
+    actorUserId: auth.id,
+    action: 'ITINERARY_COPIED',
+    entityType: 'itinerary',
+    entityId: copied.itinerary.id,
+    metadata: {
+      sourceItineraryId: source.id,
+      sourceOwnerId: source.ownerId,
+      entryCount: copied.entryCount,
+    },
+    ipAddress,
+  });
+
+  await notifyAdmin({
+    subject: 'Se ha copiado un itinerario en Itinera',
+    html: `<h2>Nueva copia de itinerario</h2><p><strong>Usuario:</strong> ${escapeHtml(auth.displayName)} (${escapeHtml(auth.email)})</p><p><strong>Itinerario original:</strong> ${escapeHtml(source.title)}</p><p><strong>Propietario original:</strong> ${escapeHtml(sourceOwner?.displayName ?? 'Desconocido')} (${escapeHtml(sourceOwner?.email ?? 'sin correo')})</p><p><strong>Nueva copia:</strong> ${escapeHtml(copied.itinerary.title)}</p><p><strong>Planes copiados:</strong> ${copied.entryCount}</p>`,
+  });
+
+  return bundle(copied.itinerary, auth.role === 'ADMIN' ? 'ADMIN' : 'OWNER');
+}
+
 export async function registerItineraryRoutes(app: FastifyInstance): Promise<void> {
   app.get('/api/v1/itineraries', async (request) => {
     const auth = await requireUser(request);
@@ -228,11 +319,38 @@ export async function registerItineraryRoutes(app: FastifyInstance): Promise<voi
     return bundle(itinerary, 'PUBLIC');
   });
 
+  app.post('/api/v1/itineraries/shared/:token/copy', async (request, reply) => {
+    const auth = await requireUser(request);
+    const params = parseInput(sharedParamsSchema, request.params);
+    const [itinerary] = await db
+      .select()
+      .from(itineraries)
+      .where(
+        and(
+          eq(itineraries.shareTokenHash, hashToken(params.token)),
+          eq(itineraries.publicShareEnabled, true),
+        ),
+      )
+      .limit(1);
+
+    if (!itinerary) notFound('Itinerario compartido no encontrado');
+    const copied = await copyItineraryForUser(itinerary, auth, request.ip);
+    return reply.status(201).send(copied);
+  });
+
   app.get('/api/v1/itineraries/:id', async (request) => {
     const auth = await requireUser(request);
     const { id } = parseInput(idParamsSchema, request.params);
     const result = await getAccess(auth, id);
     return bundle(result.itinerary, result.access);
+  });
+
+  app.post('/api/v1/itineraries/:id/copy', async (request, reply) => {
+    const auth = await requireUser(request);
+    const { id } = parseInput(idParamsSchema, request.params);
+    const { itinerary } = await getAccess(auth, id);
+    const copied = await copyItineraryForUser(itinerary, auth, request.ip);
+    return reply.status(201).send(copied);
   });
 
   app.patch('/api/v1/itineraries/:id', async (request) => {

@@ -6,6 +6,11 @@ interface MailMessage {
   html: string;
 }
 
+interface AdminNotification {
+  subject: string;
+  html: string;
+}
+
 export async function sendMail(message: MailMessage): Promise<void> {
   if (!config.RESEND_API_KEY) {
     console.info(`[mail disabled] To: ${message.to} | Subject: ${message.subject}`);
@@ -19,6 +24,7 @@ export async function sendMail(message: MailMessage): Promise<void> {
       Authorization: `Bearer ${config.RESEND_API_KEY}`,
       'Content-Type': 'application/json',
     },
+    signal: AbortSignal.timeout(10_000),
     body: JSON.stringify({
       from: config.MAIL_FROM,
       to: [message.to],
@@ -30,5 +36,22 @@ export async function sendMail(message: MailMessage): Promise<void> {
   if (!response.ok) {
     const body = await response.text();
     throw new Error(`Mail provider rejected the request (${response.status}): ${body}`);
+  }
+}
+
+export async function notifyAdmin(message: AdminNotification): Promise<void> {
+  if (!config.ADMIN_EMAIL) {
+    console.info(`[admin notification skipped] Subject: ${message.subject}`);
+    return;
+  }
+
+  try {
+    await sendMail({
+      to: config.ADMIN_EMAIL,
+      subject: message.subject,
+      html: message.html,
+    });
+  } catch (error) {
+    console.error('Admin email notification failed', error);
   }
 }

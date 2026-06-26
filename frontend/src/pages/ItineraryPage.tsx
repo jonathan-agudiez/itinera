@@ -101,16 +101,29 @@ export function ItineraryPage() {
     }
   }
 
+  async function copyItinerary() {
+    setError('');
+    setMessage('');
+    try {
+      const result = await apiRequest<ItineraryBundle>(`/itineraries/${id}/copy`, { method: 'POST' });
+      await queryClient.invalidateQueries({ queryKey: ['itineraries'] });
+      navigate(`/itineraries/${result.itinerary.id}`);
+    } catch (value) {
+      setError(value instanceof Error ? value.message : 'No se pudo copiar el itinerario.');
+    }
+  }
+
   async function addCollaborator(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError('');
-    const form = new FormData(event.currentTarget);
+    const formElement = event.currentTarget;
+    const form = new FormData(formElement);
     try {
       await apiRequest(`/itineraries/${id}/collaborators`, {
         method: 'POST',
         ...jsonBody({ email: String(form.get('email') || ''), permission: form.get('permission') }),
       });
-      event.currentTarget.reset();
+      formElement.reset();
       await refresh();
     } catch (value) { setError(value instanceof Error ? value.message : 'No se pudo añadir al colaborador.'); }
   }
@@ -144,6 +157,7 @@ export function ItineraryPage() {
         </div>
         <div className="inline-actions itinerary-actions" aria-label="Acciones del itinerario">
           <button className="action-icon print-action" onClick={() => window.print()} aria-label="Imprimir itinerario" title="Imprimir"><Icon name="printer" /></button>
+          <button className="action-icon" onClick={() => void copyItinerary()} aria-label="Copiar itinerario a mis viajes" title="Copiar a mis viajes"><Icon name="copy" /></button>
           {canManage && <button className="action-icon" onClick={() => setCollaborationOpen(true)} aria-label="Gestionar colaboradores" title="Colaboradores"><Icon name="users" /></button>}
           {canManage && <button className="action-icon" onClick={() => setSettingsOpen(true)} aria-label="Configurar itinerario" title="Configuración"><Icon name="settings" /></button>}
           {canManage && <button className="action-icon accent" onClick={() => void rotateShare()} aria-label="Crear nuevo enlace compartido" title="Nuevo enlace compartido"><Icon name="share-2" /></button>}

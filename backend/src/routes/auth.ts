@@ -11,7 +11,8 @@ import {
   setSessionCookie,
 } from '../services/auth.js';
 import { writeAudit } from '../services/audit.js';
-import { sendMail } from '../services/mail.js';
+import { notifyAdmin, sendMail } from '../services/mail.js';
+import { escapeHtml } from '../utils/html.js';
 import {
   createOpaqueToken,
   hashPassword,
@@ -73,6 +74,11 @@ export async function registerAuthRoutes(app: FastifyInstance): Promise<void> {
         entityType: 'user',
         entityId: user.id,
         ipAddress: request.ip,
+      });
+
+      await notifyAdmin({
+        subject: 'Nuevo usuario registrado en Itinera',
+        html: `<h2>Nuevo registro</h2><p><strong>Nombre:</strong> ${escapeHtml(user.displayName)}</p><p><strong>Correo:</strong> ${escapeHtml(user.email)}</p><p><strong>Fecha:</strong> ${escapeHtml(user.createdAt.toISOString())}</p>`,
       });
 
       return reply.status(201).send({ user: publicUser(user) });

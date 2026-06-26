@@ -1,68 +1,37 @@
-# Arquitectura de Itinera 2.5.4
+# Arquitectura de Itinera 2.6.0
 
-## Topología de producción
+## Copia de itinerarios
 
-```text
-Navegador
-  │
-  ├── aplicación estática ── Netlify / React + Vite
-  │
-  └── /api/* ─────────────── HTTPS / Caddy en Hetzner
-                                  │
-                                  └── itinera-v2-api:4000 / Fastify
-                                            │
-                                            └── PostgreSQL 17 privado
-```
+El backend ofrece dos operaciones autenticadas:
 
-## Separación de responsabilidades
+- `POST /api/v1/itineraries/:id/copy`
+- `POST /api/v1/itineraries/shared/:token/copy`
 
-`frontend/` es una SPA estática sin secretos de base de datos. `backend/` controla autenticación, permisos, validación, auditoría y persistencia.
+La primera exige acceso al itinerario como propietario, administrador o colaborador. La segunda exige que el enlace público siga habilitado.
 
-## Modelo de itinerario
+La copia se realiza dentro de una transacción PostgreSQL:
 
-PostgreSQL conserva `start_date` y `end_date`. La interfaz solicita `startDate` y `dayCount`; la API calcula la fecha final y valida una duración inclusiva de entre 1 y 10 días.
+1. Se lee el conjunto ordenado de planes del original.
+2. Se crea un nuevo itinerario cuyo propietario es el usuario autenticado.
+3. Se insertan copias nuevas de todos los planes.
+4. No se copian colaboradores ni sesiones.
+5. Se genera un token de compartición independiente y se deja desactivado el acceso público.
 
-La edición de duración es segura: antes de acortar o desplazar el intervalo, el backend comprueba si existen planes fuera de las nuevas fechas. Si los hay, devuelve un conflicto y no modifica el itinerario.
+Los identificadores del itinerario y de cada plan son nuevos, por lo que las ediciones posteriores quedan totalmente aisladas del original.
 
-El mismo conjunto de planes alimenta tres presentaciones:
+## Notificaciones administrativas
 
-- Escritorio: una columna por fecha, sin filas horarias y sin scroll horizontal.
-- Móvil: una fecha por pantalla, navegación de fechas y barra principal flotante inferior.
-- A4/PDF: todas las fechas dentro de la misma tabla, con densidad exclusiva de impresión.
+`notifyAdmin()` utiliza `ADMIN_EMAIL` como destinatario y delega la entrega en `sendMail()`.
 
-Los planes siempre se ordenan por hora de inicio y `sort_order`.
+- Con `RESEND_API_KEY`: se realiza la entrega mediante la API de Resend.
+- Sin `RESEND_API_KEY`: el contenido se registra en logs para desarrollo y diagnóstico.
+- Los errores del proveedor se capturan y registran; no revierten registros ni copias ya completados.
+- Los valores introducidos por usuarios se escapan antes de incorporarse al HTML del correo.
 
-## Sistema visual 2.5.4
+## Frontend
 
-- Interfaz exclusivamente en modo claro mediante `color-scheme: light only`.
-- Tipografía del sistema y superficies translúcidas inspiradas en la jerarquía visual de iOS.
-- Barra superior en escritorio.
-- Barra flotante fija inferior en móvil, sin marca duplicada y con soporte de áreas seguras.
-- Hojas inferiores móviles con margen lateral, de modo que los formularios no contacten con los bordes de la pantalla.
-- Tarjetas de plan sin iconografía decorativa; la jerarquía depende de hora, título, ubicación, descripción, escala y peso.
-- Compatibilidad con reducción de movimiento y reducción de transparencia.
-- Fallback opaco cuando el navegador no admite `backdrop-filter`.
+La vista privada muestra una acción de copia en la barra del itinerario. La vista pública muestra la misma acción; si no existe sesión, redirige a `/login` y conserva la URL compartida como destino de retorno.
 
-La impresión conserva la estructura completa del planning. Las reglas de `@media print` reducen exclusivamente la altura, el espaciado y la tipografía de las tarjetas del PDF, sin alterar las vistas interactivas.
+## Colaboradores
 
-## Autenticación
-
-El navegador recibe un token de sesión opaco en una cookie `HttpOnly`, `Secure` y `SameSite=Lax`. PostgreSQL almacena únicamente su hash SHA-256. Las contraseñas se procesan mediante Argon2id y admiten desde 6 caracteres.
-
-## Compartición y autorización
-
-- `OWNER`: control completo.
-- `WRITE`: lectura y CRUD de planes.
-- `READ`: lectura registrada.
-- `PUBLIC`: lectura mediante token.
-- `ADMIN`: gestión global.
-
-Cada ruta privada calcula el acceso en el servidor.
-
-## Migraciones
-
-La versión 2.5.4 no añade ninguna migración. `0002_entry_colors.sql` continúa formando parte del historial para instalaciones limpias.
-
-## Aislamiento del despliegue
-
-Producción utiliza el proyecto Compose `itinera_v2`, el volumen `itinera_v2_postgres_data` y el alias de gateway `itinera-v2-api`. No sustituye los contenedores de Itinera v1 ni de Yieldsoft.
+El formulario captura la referencia al elemento HTML antes del primer `await`. Esto evita que el evento sintético pierda `currentTarget` durante la petición y permite limpiar el formulario tras guardar el permiso.

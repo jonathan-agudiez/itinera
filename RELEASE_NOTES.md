@@ -1,13 +1,27 @@
-# Itinera v2.5.4
+# Itinera v2.6.0
 
-## Cambios
+## Corregido
 
-- Altura mínima de las tarjetas de plan ligeramente reducida para ganar densidad sin perder legibilidad.
-- Cabeceras de fecha ampliadas en vista normal, compacta y móvil, sin modificar el contenedor ni la estructura del planning.
-- En móvil se elimina por completo la marca «Itinera» de la navegación.
-- La navegación móvil pasa a ser una barra flotante fija en la parte inferior, superpuesta sobre el contenido y respetando las áreas seguras del dispositivo.
-- El contenido móvil reserva espacio inferior para que la barra no tape controles ni tarjetas.
-- Los overlays móviles de creación y edición conservan su comportamiento de hoja inferior, pero incorporan margen lateral para respirar respecto a los bordes de la pantalla.
-- La exportación A4/PDF mantiene íntegramente el aspecto de tabla del planning.
-- Las tarjetas del A4 se compactan de forma exclusiva para PDF, sin afectar a escritorio ni móvil.
-- Sin cambios de esquema, migraciones o datos.
+- El formulario de colaboradores ya no intenta usar `event.currentTarget` después de una operación asíncrona. Se conserva la referencia al formulario antes del `await`, por lo que `reset()` funciona correctamente.
+
+## Añadido
+
+- Copia independiente de itinerarios desde la vista privada.
+- Copia independiente desde enlaces públicos compartidos.
+- Redirección al inicio de sesión cuando una persona no autenticada intenta copiar un itinerario público.
+- Copia transaccional de todos los planes, manteniendo fechas, horas, descripciones, ubicaciones, categorías, colores y orden.
+- Auditoría `ITINERARY_COPIED` con origen, propietario original y número de planes copiados.
+- Aviso al administrador después de un nuevo registro.
+- Aviso al administrador después de una copia de itinerario.
+
+## Comportamiento de las copias
+
+- El usuario que copia se convierte en propietario de la nueva versión.
+- Los colaboradores no se copian.
+- El enlace público queda desactivado inicialmente.
+- La nueva versión puede editarse sin afectar al itinerario original.
+- El título recibe el sufijo `(copia)`.
+
+## Base de datos
+
+No hay migraciones nuevas ni cambios de esquema.

@@ -1,17 +1,32 @@
-# Itinera 2.5.4
+# Itinera 2.6.0
 
-Itinera es una aplicación colaborativa para crear itinerarios de viaje claros, compartibles e imprimibles.
+Itinera es una aplicación colaborativa para crear, compartir, copiar y editar itinerarios de viaje.
 
-## Novedades de la versión 2.5.4
+## Novedades de la versión 2.6.0
 
-- Tarjetas de plan ligeramente menos altas, manteniendo la jerarquía tipográfica actual.
-- Fechas de columna de mayor tamaño en escritorio, vista compacta y móvil.
-- Navegación móvil flotante y fija en la zona inferior, sin logo ni barra superior.
-- Respeto de áreas seguras y espacio reservado para que la navegación no cubra contenido.
-- Overlays móviles con margen lateral para evitar que el formulario quede pegado a los bordes.
-- A4/PDF con el planning completo y tarjetas más compactas solo durante la impresión.
-- Interfaz exclusivamente en modo claro.
-- Sin cambios de base de datos ni migraciones nuevas.
+- Corregido el error al añadir colaboradores: `can't access property "reset", t.currentTarget is null`.
+- Los propietarios pueden conceder permisos de lectura o edición a usuarios registrados.
+- Cualquier usuario con acceso a un itinerario puede crear una copia independiente en sus propios viajes.
+- Los itinerarios públicos compartidos incluyen una acción para copiarlos después de iniciar sesión.
+- La copia conserva fechas, destino, descripción, zona horaria, planes, colores y orden.
+- La copia no hereda colaboradores ni modifica el itinerario original.
+- El enlace público de la copia queda desactivado hasta que su nuevo propietario decida compartirla.
+- Notificación por correo al administrador cuando se registra un usuario.
+- Notificación por correo al administrador cuando alguien copia un itinerario.
+- Las notificaciones de administración son de tipo best effort: un fallo del proveedor de correo no bloquea el registro ni la copia.
+- Sin migraciones ni cambios de esquema de PostgreSQL.
+
+## Correo de administración
+
+Las notificaciones se envían a `ADMIN_EMAIL`. Para la entrega real deben configurarse:
+
+```env
+ADMIN_EMAIL=jonathan.agudiez@gmail.com
+RESEND_API_KEY=re_...
+MAIL_FROM=Itinera <notificaciones@tu-dominio-verificado.com>
+```
+
+`MAIL_FROM` debe pertenecer a un dominio o remitente verificado por el proveedor. Si `RESEND_API_KEY` está vacío, la aplicación registra la notificación en los logs, pero no envía un correo real.
 
 ## Arquitectura
 
@@ -21,6 +36,7 @@ Itinera es una aplicación colaborativa para crear itinerarios de viaje claros, 
 - **Validación:** Zod en frontend y backend.
 - **Autenticación:** sesiones opacas persistidas como hashes SHA-256.
 - **Contraseñas:** Argon2id.
+- **Correo:** API de Resend mediante `fetch`, sin SDK adicional.
 - **Producción:** frontend estático en Netlify; API y PostgreSQL en Hetzner; Caddy como gateway TLS compartido.
 
 Frontend y backend mantienen sus propios `package.json` y `package-lock.json`.
@@ -32,14 +48,14 @@ Frontend y backend mantienen sus propios `package.json` y `package-lock.json`.
 - Panel de usuario y panel de administración.
 - CRUD completo de itinerarios y planes.
 - Itinerarios de entre 1 y 10 días.
-- Vista multidía sin desplazamiento horizontal.
-- Vista móvil de una fecha por pantalla.
-- Paleta cerrada de doce colores para los planes.
-- Descripción obligatoria en todos los planes nuevos y editados.
-- Exportación A4/PDF apaisada en una sola página.
 - Enlaces públicos de solo lectura.
 - Colaboradores con permiso de lectura o edición.
+- Copia independiente de itinerarios privados accesibles y enlaces públicos.
+- Paleta cerrada de doce colores para los planes.
+- Descripción obligatoria en todos los planes nuevos y editados.
+- Exportación A4/PDF.
 - Protección frente a modificaciones concurrentes.
+- Auditoría de registros, accesos, cambios y copias.
 - Healthchecks de aplicación y base de datos.
 
 ## Verificación de calidad

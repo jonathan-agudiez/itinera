@@ -11,6 +11,7 @@ const errorMessages: Record<string, string> = {
   ITINERARY_HAS_ENTRIES_OUTSIDE_RANGE: 'Hay planes fuera de la nueva duración. Muévelos o elimínalos antes de reducir el itinerario.',
   EMAIL_EXISTS: 'Ya existe una cuenta con este correo electrónico.',
   CREATE_FAILED: 'No se pudo crear el registro.',
+  COPY_FAILED: 'No se pudo copiar el itinerario.',
   INVALID_CREDENTIALS: 'El correo electrónico o la contraseña no son correctos.',
   INVALID_RESET_TOKEN: 'El enlace de recuperación no es válido o ha caducado.',
   INVALID_CURRENT_PASSWORD: 'La contraseña actual no es correcta.',
