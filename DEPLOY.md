@@ -1,22 +1,22 @@
-# Despliegue completo de Itinera v2.7.5
+# Despliegue completo de Itinera v2.7.6
 
 Release completa para Hetzner y GitHub/Netlify. No incorpora migraciones nuevas; conserva `0003_itinerary_hidden_by_users.sql`.
 
 ## 1. PowerShell en Windows
 
 ```powershell
-Test-Path "C:\Users\Atoms\Downloads\itinera-v2.7.5.zip"
+Test-Path "C:\Users\Atoms\Downloads\itinera-v2.7.6.zip"
 ```
 
 ```powershell
 Get-FileHash `
-  "C:\Users\Atoms\Downloads\itinera-v2.7.5.zip" `
+  "C:\Users\Atoms\Downloads\itinera-v2.7.6.zip" `
   -Algorithm SHA256
 ```
 
 ```powershell
 scp -i C:\Users\Atoms\.ssh\yieldsoft_hetzner_ed25519 `
-  "C:\Users\Atoms\Downloads\itinera-v2.7.5.zip" `
+  "C:\Users\Atoms\Downloads\itinera-v2.7.6.zip" `
   root@178.104.205.43:/root/
 ```
 
@@ -28,18 +28,18 @@ ssh -i C:\Users\Atoms\.ssh\yieldsoft_hetzner_ed25519 `
 ## 2. Verificar el ZIP en Hetzner
 
 ```bash
-ls -lh /root/itinera-v2.7.5.zip
-sha256sum /root/itinera-v2.7.5.zip
+ls -lh /root/itinera-v2.7.6.zip
+sha256sum /root/itinera-v2.7.6.zip
 ```
 
-El hash debe coincidir con `itinera-v2.7.5.zip.sha256`.
+El hash debe coincidir con `itinera-v2.7.6.zip.sha256`.
 
 ## 3. Copia de seguridad de PostgreSQL
 
 ```bash
 cd /opt/itinera-v2
 mkdir -p /opt/backups/itinera-v2
-BACKUP="/opt/backups/itinera-v2/pre-v2.7.5-$(date +%Y%m%d-%H%M%S).sql"
+BACKUP="/opt/backups/itinera-v2/pre-v2.7.6-$(date +%Y%m%d-%H%M%S).sql"
 
 docker compose \
   --env-file .env.production \
@@ -57,33 +57,33 @@ test -s "$BACKUP" && echo "Backup correcto"
 ```bash
 set -e
 
-test -f /root/itinera-v2.7.5.zip
+test -f /root/itinera-v2.7.6.zip
 test -f /opt/itinera-v2/.env.production
 
-rm -rf /opt/releases/itinera-v2.7.5
-mkdir -p /opt/releases/itinera-v2.7.5
+rm -rf /opt/releases/itinera-v2.7.6
+mkdir -p /opt/releases/itinera-v2.7.6
 
 unzip -q \
-  /root/itinera-v2.7.5.zip \
-  -d /opt/releases/itinera-v2.7.5
+  /root/itinera-v2.7.6.zip \
+  -d /opt/releases/itinera-v2.7.6
 
-test -f /opt/releases/itinera-v2.7.5/VERSION.txt
-test -f /opt/releases/itinera-v2.7.5/docker-compose.hetzner.yml
-test -f /opt/releases/itinera-v2.7.5/backend/package.json
-test -f /opt/releases/itinera-v2.7.5/backend/migrations/0003_itinerary_hidden_by_users.sql
-test -f /opt/releases/itinera-v2.7.5/frontend/package.json
-test "$(cat /opt/releases/itinera-v2.7.5/VERSION.txt)" = "2.7.5"
+test -f /opt/releases/itinera-v2.7.6/VERSION.txt
+test -f /opt/releases/itinera-v2.7.6/docker-compose.hetzner.yml
+test -f /opt/releases/itinera-v2.7.6/backend/package.json
+test -f /opt/releases/itinera-v2.7.6/backend/migrations/0003_itinerary_hidden_by_users.sql
+test -f /opt/releases/itinera-v2.7.6/frontend/package.json
+test "$(cat /opt/releases/itinera-v2.7.6/VERSION.txt)" = "2.7.6"
 
-cp /opt/itinera-v2/.env.production /root/itinera-v2.env.production.v2.7.5
-chmod 600 /root/itinera-v2.env.production.v2.7.5
+cp /opt/itinera-v2/.env.production /root/itinera-v2.env.production.v2.7.6
+chmod 600 /root/itinera-v2.env.production.v2.7.6
 
 rsync -a --delete \
   --exclude='.env.production' \
   --exclude='.env.production.backup-*' \
-  /opt/releases/itinera-v2.7.5/ \
+  /opt/releases/itinera-v2.7.6/ \
   /opt/itinera-v2/
 
-cp /root/itinera-v2.env.production.v2.7.5 /opt/itinera-v2/.env.production
+cp /root/itinera-v2.env.production.v2.7.6 /opt/itinera-v2/.env.production
 chmod 600 /opt/itinera-v2/.env.production
 
 cd /opt/itinera-v2
@@ -94,7 +94,7 @@ stat -c '%a %U:%G %n' .env.production
 Resultado esperado:
 
 ```text
-2.7.5
+2.7.6
 600 root:root .env.production
 ```
 
@@ -149,11 +149,11 @@ fi
 '
 ```
 
-`live` debe indicar `"version":"2.7.5"` y `ready` debe indicar `"database":"up"`.
+`live` debe indicar `"version":"2.7.6"` y `ready` debe indicar `"database":"up"`.
 
 ## 7. GitHub y Netlify
 
-1. Descomprime `itinera-v2.7.5.zip` en Windows.
+1. Descomprime `itinera-v2.7.6.zip` en Windows.
 2. Abre la raíz del repositorio de Itinera en GitHub.
 3. Pulsa **Add file → Upload files**.
 4. Arrastra el contenido interior de la carpeta extraída.
@@ -161,7 +161,7 @@ fi
 6. Usa el mensaje:
 
 ```text
-v2.7.5: icono de ocultar y contraste A4 de impresión
+v2.7.6: icono de ocultar y contraste A4 de impresión
 ```
 
 7. Espera a que Netlify muestre el despliegue como **Published**.

@@ -1,4 +1,4 @@
-# Arquitectura de Itinera 2.7.5
+# Arquitectura de Itinera 2.7.6
 
 ## Portfolio personal y ocultación
 

@@ -956,7 +956,7 @@ tbody tr:last-child td { border-bottom: 0; }
     min-width: 0 !important;
     grid-template-rows: 13mm minmax(0,1fr) !important;
     overflow: hidden !important;
-    border-right: .5pt solid rgba(62,68,82,.12) !important;
+    border-right: .65pt solid #161616 !important;
     background: rgba(255,255,255,.30) !important;
   }
   .day-column:nth-child(even) { background: rgba(247,248,251,.42) !important; }

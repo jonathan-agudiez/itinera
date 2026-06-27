@@ -1,8 +1,10 @@
-# Itinera v2.7.5
+# Itinera v2.7.6
 
 Itinera es una aplicación colaborativa para crear, compartir, copiar, editar y presentar itinerarios de viaje.
 
-## Novedades de la versión 2.7.5
+## Novedades de la versión 2.7.6
+
+- Separadores verticales de columnas más oscuros y definidos exclusivamente al imprimir o guardar en PDF.
 
 - Acción de ocultar itinerarios en `/dashboard` presentada como icono elegante y accesible.
 - Impresión A4 con textos negros, borde exterior negro y tipografía proporcionalmente mayor.
