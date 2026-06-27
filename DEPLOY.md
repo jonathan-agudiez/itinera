@@ -1,47 +1,45 @@
-# Despliegue de Itinera v2.7.4
+# Despliegue completo de Itinera v2.7.5
 
-Esta versión hace visible en `/dashboard` la acción **Quitar de mis itinerarios** para viajes ajenos compartidos y restaura únicamente la vista A4/PDF al diseño de v2.7.1.
+Release completa para Hetzner y GitHub/Netlify. No incorpora migraciones nuevas; conserva `0003_itinerary_hidden_by_users.sql`.
 
-No incluye migraciones nuevas. Conserva la migración ya existente `0003_itinerary_hidden_by_users.sql`.
-
-## 1. Subir el ZIP desde PowerShell
+## 1. PowerShell en Windows
 
 ```powershell
-Test-Path "C:\Users\Atoms\Downloads\itinera-v2.7.4.zip"
+Test-Path "C:\Users\Atoms\Downloads\itinera-v2.7.5.zip"
 ```
 
 ```powershell
 Get-FileHash `
-  "C:\Users\Atoms\Downloads\itinera-v2.7.4.zip" `
+  "C:\Users\Atoms\Downloads\itinera-v2.7.5.zip" `
   -Algorithm SHA256
 ```
 
 ```powershell
 scp -i C:\Users\Atoms\.ssh\yieldsoft_hetzner_ed25519 `
-  "C:\Users\Atoms\Downloads\itinera-v2.7.4.zip" `
+  "C:\Users\Atoms\Downloads\itinera-v2.7.5.zip" `
   root@178.104.205.43:/root/
 ```
 
 ```powershell
-ssh -i C:\Users\Atoms\.ssh\yieldsoft_hetzner_ed25519 root@178.104.205.43
+ssh -i C:\Users\Atoms\.ssh\yieldsoft_hetzner_ed25519 `
+  root@178.104.205.43
 ```
 
-## 2. Verificar el paquete en Hetzner
+## 2. Verificar el ZIP en Hetzner
 
 ```bash
-ls -lh /root/itinera-v2.7.4.zip
-sha256sum /root/itinera-v2.7.4.zip
+ls -lh /root/itinera-v2.7.5.zip
+sha256sum /root/itinera-v2.7.5.zip
 ```
 
-El hash debe coincidir con `itinera-v2.7.4.zip.sha256`.
+El hash debe coincidir con `itinera-v2.7.5.zip.sha256`.
 
 ## 3. Copia de seguridad de PostgreSQL
 
 ```bash
 cd /opt/itinera-v2
-
 mkdir -p /opt/backups/itinera-v2
-BACKUP="/opt/backups/itinera-v2/pre-v2.7.4-$(date +%Y%m%d-%H%M%S).sql"
+BACKUP="/opt/backups/itinera-v2/pre-v2.7.5-$(date +%Y%m%d-%H%M%S).sql"
 
 docker compose \
   --env-file .env.production \
@@ -51,40 +49,41 @@ docker compose \
   > "$BACKUP"
 
 ls -lh "$BACKUP"
+test -s "$BACKUP" && echo "Backup correcto"
 ```
 
-## 4. Instalación protegida
+## 4. Instalar la release protegida
 
 ```bash
 set -e
 
-test -f /root/itinera-v2.7.4.zip
+test -f /root/itinera-v2.7.5.zip
 test -f /opt/itinera-v2/.env.production
 
-rm -rf /opt/releases/itinera-v2.7.4
-mkdir -p /opt/releases/itinera-v2.7.4
+rm -rf /opt/releases/itinera-v2.7.5
+mkdir -p /opt/releases/itinera-v2.7.5
 
 unzip -q \
-  /root/itinera-v2.7.4.zip \
-  -d /opt/releases/itinera-v2.7.4
+  /root/itinera-v2.7.5.zip \
+  -d /opt/releases/itinera-v2.7.5
 
-test -f /opt/releases/itinera-v2.7.4/VERSION.txt
-test -f /opt/releases/itinera-v2.7.4/docker-compose.hetzner.yml
-test -f /opt/releases/itinera-v2.7.4/backend/package.json
-test -f /opt/releases/itinera-v2.7.4/backend/migrations/0003_itinerary_hidden_by_users.sql
-test -f /opt/releases/itinera-v2.7.4/frontend/package.json
-test "$(cat /opt/releases/itinera-v2.7.4/VERSION.txt)" = "2.7.4"
+test -f /opt/releases/itinera-v2.7.5/VERSION.txt
+test -f /opt/releases/itinera-v2.7.5/docker-compose.hetzner.yml
+test -f /opt/releases/itinera-v2.7.5/backend/package.json
+test -f /opt/releases/itinera-v2.7.5/backend/migrations/0003_itinerary_hidden_by_users.sql
+test -f /opt/releases/itinera-v2.7.5/frontend/package.json
+test "$(cat /opt/releases/itinera-v2.7.5/VERSION.txt)" = "2.7.5"
 
-cp /opt/itinera-v2/.env.production /root/itinera-v2.env.production.v2.7.4
-chmod 600 /root/itinera-v2.env.production.v2.7.4
+cp /opt/itinera-v2/.env.production /root/itinera-v2.env.production.v2.7.5
+chmod 600 /root/itinera-v2.env.production.v2.7.5
 
 rsync -a --delete \
   --exclude='.env.production' \
   --exclude='.env.production.backup-*' \
-  /opt/releases/itinera-v2.7.4/ \
+  /opt/releases/itinera-v2.7.5/ \
   /opt/itinera-v2/
 
-cp /root/itinera-v2.env.production.v2.7.4 /opt/itinera-v2/.env.production
+cp /root/itinera-v2.env.production.v2.7.5 /opt/itinera-v2/.env.production
 chmod 600 /opt/itinera-v2/.env.production
 
 cd /opt/itinera-v2
@@ -95,7 +94,7 @@ stat -c '%a %U:%G %n' .env.production
 Resultado esperado:
 
 ```text
-2.7.4
+2.7.5
 600 root:root .env.production
 ```
 
@@ -126,43 +125,53 @@ docker compose \
 sleep 25
 ```
 
-## 6. Verificar backend
+## 6. Verificar backend y correo
 
 ```bash
+cd /opt/itinera-v2
+
+docker compose \
+  --env-file .env.production \
+  -f docker-compose.hetzner.yml \
+  ps
+
 curl -fsS https://itinera-v2-api.178-104-205-43.sslip.io/api/v1/health/live
 echo
 curl -fsS https://itinera-v2-api.178-104-205-43.sslip.io/api/v1/health/ready
+echo
+
+docker exec itinera_v2-api-1 sh -lc '
+if [ -n "$RESEND_API_KEY" ]; then
+  echo "RESEND_API_KEY=<CONFIGURADA>"
+else
+  echo "RESEND_API_KEY=<VACÍA>"
+fi
+'
 ```
 
-`live` debe indicar `"version":"2.7.4"`.
+`live` debe indicar `"version":"2.7.5"` y `ready` debe indicar `"database":"up"`.
 
-## 7. Actualizar GitHub y Netlify
+## 7. GitHub y Netlify
 
-1. Descomprime `itinera-v2.7.4.zip` en Windows.
-2. Abre el repositorio de Itinera en GitHub.
-3. Selecciona **Add file → Upload files**.
+1. Descomprime `itinera-v2.7.5.zip` en Windows.
+2. Abre la raíz del repositorio de Itinera en GitHub.
+3. Pulsa **Add file → Upload files**.
 4. Arrastra el contenido interior de la carpeta extraída.
 5. Comprueba que `backend/`, `frontend/`, `netlify.toml` y `VERSION.txt` quedan en la raíz.
 6. Usa el mensaje:
 
 ```text
-v2.7.4: botón visible en dashboard y A4 restaurado
+v2.7.5: icono de ocultar y contraste A4 de impresión
 ```
 
-Netlify desplegará el frontend automáticamente.
+7. Espera a que Netlify muestre el despliegue como **Published**.
+8. Recarga `https://poca-broma.netlify.app` con `Ctrl + F5`.
 
-## 8. Pruebas funcionales
+## 8. Comprobaciones funcionales
 
-### Botón en dashboard
-
-1. Entra con un usuario colaborador.
-2. Abre `/dashboard`.
-3. En la tarjeta de un itinerario cuyo propietario sea otro usuario debe aparecer **Quitar de mis itinerarios**.
-4. Confirma la acción y verifica que desaparece solo de ese portfolio.
-5. Comprueba con el propietario que el original sigue intacto.
-
-### PDF A4
-
-1. Abre un itinerario y pulsa imprimir.
-2. Confirma que la composición coincide con v2.7.1: fondo neutro, cabecera sin marca y tarjetas pastel discretas.
-3. Activa **Gráficos de fondo** al guardar como PDF.
+- En `/dashboard`, los itinerarios ajenos muestran únicamente el icono para quitarlos de la vista personal.
+- La acción conserva su tooltip y etiqueta accesible.
+- En impresión A4, las horas, descripciones y demás textos se ven negros.
+- El borde exterior de la tabla es negro y no presenta sombra.
+- La tipografía es mayor en todos los niveles de densidad de impresión.
+- Activa **Gráficos de fondo** en el diálogo de impresión para conservar las tarjetas pastel.

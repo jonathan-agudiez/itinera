@@ -115,7 +115,6 @@ export function DashboardPage() {
                   title="Quitar de mis itinerarios"
                 >
                   <Icon name="eye-off" size={16} />
-                  <span>Quitar de mis itinerarios</span>
                 </button>
               )}
             </article>

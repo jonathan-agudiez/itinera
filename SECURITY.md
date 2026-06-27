@@ -1,4 +1,4 @@
-# Seguridad de Itinera 2.7.4
+# Seguridad de Itinera 2.7.5
 
 - Contraseñas almacenadas con Argon2id.
 - Sesiones opacas y tokens almacenados mediante hash SHA-256.

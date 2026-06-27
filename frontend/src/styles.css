@@ -349,20 +349,18 @@ textarea { resize: vertical; }
   right: 1rem;
   bottom: 1rem;
   display: inline-flex;
+  width: 2.45rem;
+  height: 2.45rem;
   min-height: 2.45rem;
   align-items: center;
   justify-content: center;
-  gap: .48rem;
-  padding: .58rem .84rem;
+  padding: 0;
   border: 1px solid rgba(255,255,255,.8);
   border-radius: 999px;
   color: rgba(60,60,67,.72);
   background: rgba(255,255,255,.62);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.94), 0 7px 18px rgba(30,30,45,.07);
-  font-size: .76rem;
-  font-weight: 650;
   line-height: 1;
-  white-space: nowrap;
   -webkit-backdrop-filter: blur(18px) saturate(165%);
   backdrop-filter: blur(18px) saturate(165%);
 }
@@ -726,7 +724,7 @@ tbody tr:last-child td { border-bottom: 0; }
   .trip-card h2 { margin: 1.9rem 0 .38rem; font-size: 1.38rem; }
   .trip-dates { margin-top: 1rem; }
   .trip-card.has-actions .trip-card-link { padding-bottom: 4.8rem; }
-  .trip-hide-button { right: 1.05rem; bottom: 1.05rem; left: 1.05rem; width: auto; }
+  .trip-hide-button { right: 1.05rem; bottom: 1.05rem; left: auto; width: 2.45rem; }
 
   .itinerary-heading { gap: .9rem; margin-bottom: 1rem; }
   .itinerary-actions { width: 100%; justify-content: space-evenly; padding: .32rem; }
@@ -810,7 +808,22 @@ tbody tr:last-child td { border-bottom: 0; }
     background: #eef1f5 !important;
   }
 
-  body { color: #1c1c1e !important; font-size: 7pt !important; }
+  body {
+    color: #000 !important;
+    font-size: 7.6pt !important;
+    text-rendering: geometricPrecision !important;
+    -webkit-font-smoothing: antialiased !important;
+  }
+
+  .print-itinerary-header,
+  .print-itinerary-header *,
+  .calendar-grid,
+  .calendar-grid * {
+    color: #000 !important;
+    opacity: 1 !important;
+    text-shadow: none !important;
+    filter: none !important;
+  }
 
   body::before,
   .topbar,
@@ -843,7 +856,7 @@ tbody tr:last-child td { border-bottom: 0; }
     grid-template-rows: 22mm minmax(0, 1fr) !important;
     margin: 0 !important;
     overflow: hidden !important;
-    border: .55pt solid rgba(62,68,82,.18) !important;
+    border: .9pt solid #000 !important;
     border-radius: 5.2mm !important;
     background: radial-gradient(circle at 12% -5%, rgba(255,255,255,.98), transparent 35%), linear-gradient(145deg, #f9fafc 0%, #f1f3f7 100%) !important;
     box-shadow: none !important;
@@ -867,7 +880,7 @@ tbody tr:last-child td { border-bottom: 0; }
     display: block !important;
     margin: 0 0 .6mm !important;
     color: #007aff !important;
-    font-size: 4.4pt !important;
+    font-size: 4.9pt !important;
     font-weight: 760 !important;
     letter-spacing: .12em !important;
     text-transform: uppercase !important;
@@ -876,7 +889,7 @@ tbody tr:last-child td { border-bottom: 0; }
     margin: 0 !important;
     overflow: hidden !important;
     color: #19191d !important;
-    font-size: 13pt !important;
+    font-size: 14pt !important;
     font-weight: 760 !important;
     line-height: 1 !important;
     letter-spacing: -.035em !important;
@@ -889,7 +902,7 @@ tbody tr:last-child td { border-bottom: 0; }
     margin-top: 1.2mm !important;
     overflow: hidden !important;
     color: rgba(60,60,67,.66) !important;
-    font-size: 4.5pt !important;
+    font-size: 5.05pt !important;
     font-weight: 390 !important;
     line-height: 1.25 !important;
     -webkit-box-orient: vertical !important;
@@ -906,11 +919,11 @@ tbody tr:last-child td { border-bottom: 0; }
     border: .45pt solid rgba(62,68,82,.10) !important;
     border-radius: 2.2mm !important;
     background: rgba(255,255,255,.66) !important;
-    box-shadow: inset 0 .4pt 0 rgba(255,255,255,.95) !important;
+    box-shadow: none !important;
   }
   .print-itinerary-meta small {
     color: #8e8e93 !important;
-    font-size: 3.6pt !important;
+    font-size: 4.05pt !important;
     font-weight: 720 !important;
     letter-spacing: .08em !important;
     text-transform: uppercase !important;
@@ -918,7 +931,7 @@ tbody tr:last-child td { border-bottom: 0; }
   .print-itinerary-meta strong {
     overflow: hidden !important;
     color: #35353a !important;
-    font-size: 4.6pt !important;
+    font-size: 5.15pt !important;
     font-weight: 620 !important;
     line-height: 1.15 !important;
     text-overflow: ellipsis !important;
@@ -964,21 +977,21 @@ tbody tr:last-child td { border-bottom: 0; }
   .day-date span,
   .calendar-grid[data-density="compact"] .day-date span {
     color: #707078 !important;
-    font-size: 5.1pt !important;
+    font-size: 5.7pt !important;
     font-weight: 720 !important;
     letter-spacing: .07em !important;
   }
   .day-date strong,
   .calendar-grid[data-density="compact"] .day-date strong {
     color: #17171b !important;
-    font-size: 12pt !important;
+    font-size: 13.2pt !important;
     font-weight: 730 !important;
     line-height: 1 !important;
   }
   .day-date small,
   .calendar-grid[data-density="compact"] .day-date small {
     color: #8b8b92 !important;
-    font-size: 5.2pt !important;
+    font-size: 5.8pt !important;
     font-weight: 440 !important;
   }
 
@@ -1004,7 +1017,7 @@ tbody tr:last-child td { border-bottom: 0; }
     border-radius: 2.65mm !important;
     background: var(--entry-bg, #e7efe9) !important;
     background: linear-gradient(145deg, rgba(255,255,255,.34), rgba(255,255,255,.04)), color-mix(in srgb, var(--entry-bg, #e7efe9) 82%, white) !important;
-    box-shadow: inset 0 .45pt 0 rgba(255,255,255,.98), 0 .55mm 1.6mm rgba(38,43,55,.075) !important;
+    box-shadow: none !important;
     overflow: hidden !important;
     break-inside: avoid !important;
     transform: none !important;
@@ -1013,7 +1026,7 @@ tbody tr:last-child td { border-bottom: 0; }
   .entry-card .entry-time,
   .calendar-grid[data-density="compact"] .entry-card .entry-time {
     color: rgba(60,60,67,.70) !important;
-    font-size: 5.4pt !important;
+    font-size: 6.1pt !important;
     font-weight: 360 !important;
     line-height: 1 !important;
     letter-spacing: -.01em !important;
@@ -1024,7 +1037,7 @@ tbody tr:last-child td { border-bottom: 0; }
     max-height: 2.25em !important;
     overflow: hidden !important;
     color: #1d1d21 !important;
-    font-size: 7.2pt !important;
+    font-size: 8pt !important;
     font-weight: 710 !important;
     line-height: 1.1 !important;
     letter-spacing: -.02em !important;
@@ -1036,7 +1049,7 @@ tbody tr:last-child td { border-bottom: 0; }
     display: block !important;
     overflow: hidden !important;
     color: rgba(60,60,67,.65) !important;
-    font-size: 4.5pt !important;
+    font-size: 5.05pt !important;
     font-weight: 390 !important;
     line-height: 1.12 !important;
     text-overflow: ellipsis !important;
@@ -1049,7 +1062,7 @@ tbody tr:last-child td { border-bottom: 0; }
     margin: 0 !important;
     overflow: hidden !important;
     color: rgba(60,60,67,.65) !important;
-    font-size: 4.45pt !important;
+    font-size: 5.05pt !important;
     font-weight: 350 !important;
     line-height: 1.2 !important;
     -webkit-box-orient: vertical !important;
@@ -1061,19 +1074,19 @@ tbody tr:last-child td { border-bottom: 0; }
     margin-bottom: .55mm !important;
     padding: .82mm .88mm .9mm !important;
     border-radius: 1.9mm !important;
-    box-shadow: inset 0 .35pt 0 rgba(255,255,255,.96), 0 .35mm .9mm rgba(38,43,55,.055) !important;
+    box-shadow: none !important;
   }
-  .calendar-grid[data-print-density="medium"] .entry-card .entry-time { font-size: 4pt !important; }
+  .calendar-grid[data-print-density="medium"] .entry-card .entry-time { font-size: 4.55pt !important; }
   .calendar-grid[data-print-density="medium"] .entry-card .entry-title {
     max-height: 1.12em !important;
-    font-size: 5.3pt !important;
+    font-size: 5.95pt !important;
     line-height: 1.08 !important;
     -webkit-line-clamp: 1 !important;
   }
-  .calendar-grid[data-print-density="medium"] .entry-card .entry-location { font-size: 3.45pt !important; }
+  .calendar-grid[data-print-density="medium"] .entry-card .entry-location { font-size: 3.9pt !important; }
   .calendar-grid[data-print-density="medium"] .entry-card .entry-description {
     max-height: 1.15em !important;
-    font-size: 3.45pt !important;
+    font-size: 3.9pt !important;
     line-height: 1.1 !important;
     -webkit-line-clamp: 1 !important;
   }
@@ -1083,20 +1096,31 @@ tbody tr:last-child td { border-bottom: 0; }
     margin-bottom: .36mm !important;
     padding: .58mm .65mm .62mm !important;
     border-radius: 1.45mm !important;
-    box-shadow: inset 0 .3pt 0 rgba(255,255,255,.95), 0 .22mm .6mm rgba(38,43,55,.045) !important;
+    box-shadow: none !important;
   }
-  .calendar-grid[data-print-density="dense"] .entry-card .entry-time { font-size: 3.35pt !important; }
+  .calendar-grid[data-print-density="dense"] .entry-card .entry-time { font-size: 3.85pt !important; }
   .calendar-grid[data-print-density="dense"] .entry-card .entry-title {
     max-height: 1.05em !important;
-    font-size: 4.25pt !important;
+    font-size: 4.75pt !important;
     line-height: 1.02 !important;
     -webkit-line-clamp: 1 !important;
   }
   .calendar-grid[data-print-density="dense"] .entry-card .entry-location { display: none !important; }
   .calendar-grid[data-print-density="dense"] .entry-card .entry-description {
     max-height: 1.05em !important;
-    font-size: 3.05pt !important;
+    font-size: 3.5pt !important;
     line-height: 1 !important;
     -webkit-line-clamp: 1 !important;
+  }
+
+  /* Contraste final de impresión: prevalece sobre todos los colores de pantalla. */
+  #root .print-itinerary-header,
+  #root .print-itinerary-header *,
+  #root .calendar-grid,
+  #root .calendar-grid * {
+    color: #000 !important;
+    opacity: 1 !important;
+    text-shadow: none !important;
+    filter: none !important;
   }
 }

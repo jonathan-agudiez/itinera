@@ -1,7 +1,7 @@
-# Itinera v2.7.4
+# Itinera v2.7.5
 
-## Ajuste de impresión A4
-
-- Eliminada exclusivamente la sombra exterior del contenedor de la tabla dentro de `@media print`.
-- Se conservan sin cambios la composición A4 de v2.7.1, las tarjetas, los colores, los bordes, las tipografías y el resto de la aplicación.
-- No incluye migraciones nuevas ni cambios en PostgreSQL.
+- El botón «Quitar de mis itinerarios» vuelve a mostrarse únicamente como icono en `/dashboard`, conservando `aria-label` y `title`.
+- La vista `@media print` usa texto negro sólido y un borde exterior negro para mejorar la legibilidad en impresoras y PDF.
+- Se incrementa proporcionalmente la tipografía de la vista A4, incluidas horas, títulos, ubicaciones y descripciones.
+- Se eliminan sombras exclusivamente en impresión para evitar tramas y artefactos de semitono.
+- No se modifica la interfaz normal de escritorio o móvil ni la lógica de negocio.
