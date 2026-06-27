@@ -22,6 +22,7 @@ const errorMessages: Record<string, string> = {
   CANNOT_DELETE_SELF: 'No puedes eliminar tu propia cuenta de administrador.',
   INVALID_TIME_RANGE: 'La hora de finalización debe ser posterior a la hora de inicio.',
   OWNER_IS_NOT_COLLABORATOR: 'El propietario ya dispone de acceso completo.',
+  OWNER_CANNOT_HIDE: 'El propietario no puede ocultar su propio itinerario; puede conservarlo o eliminarlo definitivamente.',
   STALE_ENTRY: 'Otra persona ha modificado esta actividad. Recarga la página e inténtalo de nuevo.',
   REQUEST_FAILED: 'No se pudo completar la solicitud.',
   NETWORK_ERROR: 'No se pudo conectar con el servidor. Comprueba tu conexión e inténtalo de nuevo.',

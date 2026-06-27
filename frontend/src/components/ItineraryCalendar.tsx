@@ -73,12 +73,15 @@ export function ItineraryCalendar({
   return (
     <section className="calendar-shell" aria-label="Itinerario">
       <header className="print-itinerary-header">
-        <div className="print-brand"><span className="brand-mark">I</span><span>Itinera</span></div>
         <div className="print-itinerary-copy">
-          <span className="eyebrow">Itinerario</span>
+          <span className="eyebrow">Plan de viaje</span>
           <h1>{itinerary.title}</h1>
-          <p>{itinerary.destination || 'Destino por decidir'} · {formatDateRange(itinerary.startDate, itinerary.endDate)}</p>
           {itinerary.description && <small>{itinerary.description}</small>}
+        </div>
+        <div className="print-itinerary-meta">
+          <span><small>Destino</small><strong>{itinerary.destination || 'Por decidir'}</strong></span>
+          <span><small>Fechas</small><strong>{formatDateRange(itinerary.startDate, itinerary.endDate)}</strong></span>
+          <span><small>Resumen</small><strong>{dates.length} días · {entries.length} planes</strong></span>
         </div>
       </header>
 

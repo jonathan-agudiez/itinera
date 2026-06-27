@@ -7,6 +7,7 @@ import { ItineraryCalendar } from '../components/ItineraryCalendar';
 import { Icon } from '../components/Icon';
 import { Modal } from '../components/Modal';
 import { apiRequest, jsonBody } from '../lib/api';
+import { useAuth } from '../lib/auth';
 import { dayCountFromRange, formatDateRange } from '../lib/dates';
 import { accessLabels, permissionLabels } from '../lib/labels';
 import type { ItineraryBundle, ItineraryEntry, Permission } from '../types';
@@ -25,10 +26,12 @@ export function ItineraryPage() {
   const { id = '' } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const [editor, setEditor] = useState<{ date: string; startTime?: string; entry?: ItineraryEntry } | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [collaborationOpen, setCollaborationOpen] = useState(false);
   const [dangerOpen, setDangerOpen] = useState(false);
+  const [hideOpen, setHideOpen] = useState(false);
   const [shareUrl, setShareUrl] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -66,6 +69,8 @@ export function ItineraryPage() {
   const data = query.data;
   const canWrite = ['OWNER', 'WRITE', 'ADMIN'].includes(data.access);
   const canManage = ['OWNER', 'ADMIN'].includes(data.access);
+  const isOwner = data.itinerary.ownerId === user?.id;
+  const canHide = !isOwner && data.access !== 'PUBLIC';
 
   async function saveSettings(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -139,6 +144,18 @@ export function ItineraryPage() {
     await refresh();
   }
 
+  async function hideItinerary() {
+    setError('');
+    try {
+      await apiRequest<void>(`/itineraries/${id}/hide`, { method: 'POST' });
+      await queryClient.invalidateQueries({ queryKey: ['itineraries'] });
+      navigate('/dashboard');
+    } catch (value) {
+      setHideOpen(false);
+      setError(value instanceof Error ? value.message : 'No se pudo quitar el itinerario de tu vista.');
+    }
+  }
+
   async function deleteItinerary() {
     if (!window.confirm(`¿Eliminar permanentemente “${data.itinerary.title}”?`)) return;
     await apiRequest<void>(`/itineraries/${id}`, { method: 'DELETE' });
@@ -156,12 +173,13 @@ export function ItineraryPage() {
           <p className="muted">{formatDateRange(data.itinerary.startDate, data.itinerary.endDate)} · {accessLabels[data.access]}</p>
         </div>
         <div className="inline-actions itinerary-actions" aria-label="Acciones del itinerario">
-          <button className="action-icon print-action" onClick={() => window.print()} aria-label="Imprimir itinerario" title="Imprimir"><Icon name="printer" /></button>
+          <button className="action-icon print-action" onClick={() => window.print()} aria-label="Imprimir itinerario" title="Guardar como PDF o imprimir"><Icon name="printer" /></button>
           <button className="action-icon" onClick={() => void copyItinerary()} aria-label="Copiar itinerario a mis viajes" title="Copiar a mis viajes"><Icon name="copy" /></button>
+          {canHide && <button className="action-icon" onClick={() => setHideOpen(true)} aria-label="Quitar itinerario de mi vista" title="Quitar de mi vista"><Icon name="eye-off" /></button>}
           {canManage && <button className="action-icon" onClick={() => setCollaborationOpen(true)} aria-label="Gestionar colaboradores" title="Colaboradores"><Icon name="users" /></button>}
           {canManage && <button className="action-icon" onClick={() => setSettingsOpen(true)} aria-label="Configurar itinerario" title="Configuración"><Icon name="settings" /></button>}
           {canManage && <button className="action-icon accent" onClick={() => void rotateShare()} aria-label="Crear nuevo enlace compartido" title="Nuevo enlace compartido"><Icon name="share-2" /></button>}
-          {canManage && <button className="action-icon danger-icon" onClick={() => setDangerOpen(true)} aria-label="Eliminar itinerario" title="Eliminar itinerario"><Icon name="trash-2" /></button>}
+          {isOwner && <button className="action-icon danger-icon" onClick={() => setDangerOpen(true)} aria-label="Eliminar itinerario" title="Eliminar itinerario definitivamente"><Icon name="trash-2" /></button>}
         </div>
       </header>
 
@@ -201,6 +219,22 @@ export function ItineraryPage() {
                 <button className="icon-button danger-icon" onClick={() => void removeCollaborator(person.userId)} aria-label={`Eliminar a ${person.displayName}`} title="Eliminar colaborador"><Icon name="trash-2" size={16} /></button>
               </div>
             ))}
+          </div>
+        </Modal>
+      )}
+
+
+      {hideOpen && (
+        <Modal title="Quitar de mis itinerarios" onClose={() => setHideOpen(false)}>
+          <div className="hide-overlay">
+            <div>
+              <h3>El original seguirá intacto</h3>
+              <p>Solo dejarás de ver este itinerario en tu portfolio. El propietario, sus planes y el resto de colaboradores no se verán afectados.</p>
+            </div>
+          </div>
+          <div className="modal-actions">
+            <button type="button" className="button ghost" onClick={() => setHideOpen(false)}>Cancelar</button>
+            <button type="button" className="button primary" onClick={() => void hideItinerary()}>Quitar de mi vista</button>
           </div>
         </Modal>
       )}

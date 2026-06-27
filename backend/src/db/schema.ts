@@ -126,6 +126,23 @@ export const itineraryCollaborators = pgTable(
   ],
 );
 
+export const itineraryHiddenByUsers = pgTable(
+  'itinerary_hidden_by_users',
+  {
+    itineraryId: uuid('itinerary_id')
+      .notNull()
+      .references(() => itineraries.id, { onDelete: 'cascade' }),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.itineraryId, table.userId] }),
+    index('itinerary_hidden_user_idx').on(table.userId, table.createdAt),
+  ],
+);
+
 export const itineraryEntries = pgTable(
   'itinerary_entries',
   {

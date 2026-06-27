@@ -7,12 +7,14 @@ import {
   itineraries,
   itineraryCollaborators,
   itineraryEntries,
+  itineraryHiddenByUsers,
   users,
   type Itinerary,
 } from '../db/schema.js';
 import { requireUser, type AuthUser } from '../services/auth.js';
 import { writeAudit } from '../services/audit.js';
 import { notifyAdmin } from '../services/mail.js';
+import { canHideItineraryFromPortfolio, canPermanentlyDeleteItinerary } from '../services/itinerary-permissions.js';
 import { escapeHtml } from '../utils/html.js';
 import { createOpaqueToken, hashToken, normalizeEmail } from '../utils/crypto.js';
 import { AppError, forbidden, notFound } from '../utils/errors.js';
@@ -252,9 +254,17 @@ export async function registerItineraryRoutes(app: FastifyInstance): Promise<voi
       .innerJoin(itineraries, eq(itineraryCollaborators.itineraryId, itineraries.id))
       .where(eq(itineraryCollaborators.userId, auth.id));
 
+    const hidden = await db
+      .select({ itineraryId: itineraryHiddenByUsers.itineraryId })
+      .from(itineraryHiddenByUsers)
+      .where(eq(itineraryHiddenByUsers.userId, auth.id));
+    const hiddenIds = new Set(hidden.map(({ itineraryId }) => itineraryId));
+
     const items = [
       ...owned.map(({ itinerary }) => ({ ...itinerary, access: auth.role === 'ADMIN' ? 'ADMIN' : 'OWNER' })),
-      ...shared.map(({ itinerary, permission }) => ({ ...itinerary, access: permission })),
+      ...shared
+        .filter(({ itinerary }) => !hiddenIds.has(itinerary.id))
+        .map(({ itinerary, permission }) => ({ ...itinerary, access: permission })),
     ].sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
 
     return { itineraries: items };
@@ -417,8 +427,10 @@ export async function registerItineraryRoutes(app: FastifyInstance): Promise<voi
   app.delete('/api/v1/itineraries/:id', async (request, reply) => {
     const auth = await requireUser(request);
     const { id } = parseInput(idParamsSchema, request.params);
-    const { access } = await getAccess(auth, id);
-    if (!canManage(access)) forbidden('Solo el propietario o un administrador pueden eliminar este itinerario');
+    const { itinerary } = await getAccess(auth, id);
+    if (!canPermanentlyDeleteItinerary(itinerary.ownerId, auth.id)) {
+      forbidden('Solo el propietario puede eliminar permanentemente este itinerario');
+    }
 
     await writeAudit({
       actorUserId: auth.id,
@@ -428,6 +440,32 @@ export async function registerItineraryRoutes(app: FastifyInstance): Promise<voi
       ipAddress: request.ip,
     });
     await db.delete(itineraries).where(eq(itineraries.id, id));
+    return reply.status(204).send();
+  });
+
+  app.post('/api/v1/itineraries/:id/hide', async (request, reply) => {
+    const auth = await requireUser(request);
+    const { id } = parseInput(idParamsSchema, request.params);
+    const { itinerary } = await getAccess(auth, id);
+
+    if (!canHideItineraryFromPortfolio(itinerary.ownerId, auth.id)) {
+      throw new AppError(409, 'OWNER_CANNOT_HIDE', 'El propietario debe conservar o eliminar su propio itinerario');
+    }
+
+    await db
+      .insert(itineraryHiddenByUsers)
+      .values({ itineraryId: id, userId: auth.id })
+      .onConflictDoNothing();
+
+    await writeAudit({
+      actorUserId: auth.id,
+      action: 'ITINERARY_HIDDEN_FROM_PORTFOLIO',
+      entityType: 'itinerary',
+      entityId: id,
+      metadata: { ownerId: itinerary.ownerId },
+      ipAddress: request.ip,
+    });
+
     return reply.status(204).send();
   });
 
@@ -474,13 +512,25 @@ export async function registerItineraryRoutes(app: FastifyInstance): Promise<voi
       throw new AppError(409, 'OWNER_IS_NOT_COLLABORATOR', 'El propietario ya dispone de acceso completo');
     }
 
-    await db
-      .insert(itineraryCollaborators)
-      .values({ itineraryId: id, userId: collaboratorUser.id, permission: input.permission })
-      .onConflictDoUpdate({
-        target: [itineraryCollaborators.itineraryId, itineraryCollaborators.userId],
-        set: { permission: input.permission },
-      });
+    await db.transaction(async (transaction) => {
+      await transaction
+        .insert(itineraryCollaborators)
+        .values({ itineraryId: id, userId: collaboratorUser.id, permission: input.permission })
+        .onConflictDoUpdate({
+          target: [itineraryCollaborators.itineraryId, itineraryCollaborators.userId],
+          set: { permission: input.permission },
+        });
+
+      // Una nueva invitación explícita vuelve a mostrar el viaje en el portfolio del colaborador.
+      await transaction
+        .delete(itineraryHiddenByUsers)
+        .where(
+          and(
+            eq(itineraryHiddenByUsers.itineraryId, id),
+            eq(itineraryHiddenByUsers.userId, collaboratorUser.id),
+          ),
+        );
+    });
 
     await writeAudit({
       actorUserId: auth.id,
@@ -520,14 +570,24 @@ export async function registerItineraryRoutes(app: FastifyInstance): Promise<voi
     const { access } = await getAccess(auth, id);
     if (!canManage(access)) forbidden('Solo el propietario o un administrador pueden gestionar colaboradores');
 
-    await db
-      .delete(itineraryCollaborators)
-      .where(
-        and(
-          eq(itineraryCollaborators.itineraryId, id),
-          eq(itineraryCollaborators.userId, userId),
-        ),
-      );
+    await db.transaction(async (transaction) => {
+      await transaction
+        .delete(itineraryCollaborators)
+        .where(
+          and(
+            eq(itineraryCollaborators.itineraryId, id),
+            eq(itineraryCollaborators.userId, userId),
+          ),
+        );
+      await transaction
+        .delete(itineraryHiddenByUsers)
+        .where(
+          and(
+            eq(itineraryHiddenByUsers.itineraryId, id),
+            eq(itineraryHiddenByUsers.userId, userId),
+          ),
+        );
+    });
     return reply.status(204).send();
   });
 

@@ -1,37 +1,40 @@
-# Arquitectura de Itinera 2.6.0
+# Arquitectura de Itinera 2.7.4
 
-## Copia de itinerarios
+## Portfolio personal y ocultación
 
-El backend ofrece dos operaciones autenticadas:
+La relación `itinerary_hidden_by_users` almacena preferencias personales de visibilidad:
 
-- `POST /api/v1/itineraries/:id/copy`
-- `POST /api/v1/itineraries/shared/:token/copy`
+- clave primaria compuesta por `itinerary_id` y `user_id`;
+- borrado en cascada si desaparece el usuario o el itinerario;
+- no modifica el itinerario, sus planes, el propietario ni los permisos;
+- `GET /api/v1/itineraries` filtra únicamente los itinerarios compartidos que el usuario haya ocultado.
 
-La primera exige acceso al itinerario como propietario, administrador o colaborador. La segunda exige que el enlace público siga habilitado.
+La operación se expone mediante:
 
-La copia se realiza dentro de una transacción PostgreSQL:
+```text
+POST /api/v1/itineraries/:id/hide
+```
 
-1. Se lee el conjunto ordenado de planes del original.
-2. Se crea un nuevo itinerario cuyo propietario es el usuario autenticado.
-3. Se insertan copias nuevas de todos los planes.
-4. No se copian colaboradores ni sesiones.
-5. Se genera un token de compartición independiente y se deja desactivado el acceso público.
+En `/dashboard`, el frontend muestra el botón **Quitar de mis itinerarios** cuando `itinerary.ownerId !== authenticatedUser.id`. Esta regla representa directamente la propiedad real y evita depender del texto o estado visual de los permisos.
 
-Los identificadores del itinerario y de cada plan son nuevos, por lo que las ediciones posteriores quedan totalmente aisladas del original.
+El endpoint exige acceso previo al itinerario y rechaza al propietario. El propietario conserva dos opciones: mantener el itinerario o eliminarlo definitivamente.
 
-## Notificaciones administrativas
+Cuando el propietario vuelve a añadir explícitamente a un colaborador, la preferencia de ocultación se elimina y el viaje reaparece en su portfolio.
 
-`notifyAdmin()` utiliza `ADMIN_EMAIL` como destinatario y delega la entrega en `sendMail()`.
+## Propiedad y eliminación
 
-- Con `RESEND_API_KEY`: se realiza la entrega mediante la API de Resend.
-- Sin `RESEND_API_KEY`: el contenido se registra en logs para desarrollo y diagnóstico.
-- Los errores del proveedor se capturan y registran; no revierten registros ni copias ya completados.
-- Los valores introducidos por usuarios se escapan antes de incorporarse al HTML del correo.
+La eliminación permanente se autoriza comparando `itineraries.owner_id` con el usuario autenticado. El rol de administrador no sustituye la propiedad para esta operación.
 
-## Frontend
+Las copias siguen el mismo modelo: el usuario que copia recibe un itinerario con UUID nuevo y se convierte en su propietario.
 
-La vista privada muestra una acción de copia en la barra del itinerario. La vista pública muestra la misma acción; si no existe sesión, redirige a `/login` y conserva la URL compartida como destino de retorno.
+## Impresión A4
 
-## Colaboradores
+La hoja A4 apaisada conserva el diseño de v2.7.1:
 
-El formulario captura la referencia al elemento HTML antes del primer `await`. Esto evita que el evento sintético pierda `currentTarget` durante la petición y permite limpiar el formulario tras guardar el permiso.
+1. Cabecera editorial de 22 mm, sin logotipo ni nombre de marca.
+2. Fondo neutro y limpio.
+3. Tabla de días en columnas iguales con alternancia muy sutil.
+4. Tarjetas pastel coherentes con los colores de los planes.
+5. Tipografía y densidad adaptativas según el máximo de planes por día.
+
+Todo el diseño se aplica dentro de `@media print`, sin afectar a escritorio ni móvil.

@@ -1,22 +1,14 @@
-# Seguridad de Itinera 2.6.0
+# Seguridad de Itinera 2.7.4
 
-## Copias
-
-- Solo un usuario autenticado puede crear una copia.
-- Las copias privadas requieren que el usuario ya tenga acceso al original.
-- Las copias públicas requieren un token válido y un enlace habilitado.
-- La operación se ejecuta en una transacción para evitar copias parciales.
-- Los colaboradores y permisos del original nunca se heredan.
-- La nueva copia nace con el enlace público desactivado.
-- Cada copia recibe identificadores y token de compartición nuevos.
-
-## Notificaciones
-
-- Los datos de usuario se escapan antes de introducirlos en HTML.
-- La clave de Resend solo se almacena en `.env.production`.
-- Los fallos del proveedor no exponen secretos en la respuesta HTTP ni bloquean la operación principal.
-- `MAIL_FROM` debe utilizar un remitente verificado.
-
-## Estado de dependencias
-
-Las auditorías completas y de producción de frontend y backend no detectaron vulnerabilidades en esta release.
+- Contraseñas almacenadas con Argon2id.
+- Sesiones opacas y tokens almacenados mediante hash SHA-256.
+- Cookies `HttpOnly`, `Secure` y `SameSite` configurables.
+- CORS restringido a orígenes autorizados.
+- Cabeceras de seguridad mediante Helmet.
+- Limitación de peticiones en autenticación y API.
+- Validación de entradas con Zod.
+- Consultas parametrizadas mediante Drizzle ORM.
+- Eliminación permanente limitada al propietario real del itinerario.
+- Ocultar un viaje compartido solo crea una preferencia personal; nunca elimina el original.
+- El frontend decide mostrar la acción de ocultación comparando el propietario real con el usuario autenticado.
+- La configuración sensible permanece fuera del repositorio en `.env.production` con permisos `600`.

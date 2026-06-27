@@ -6,6 +6,7 @@ import { Icon } from '../components/Icon';
 import { Modal } from '../components/Modal';
 import { apiRequest, jsonBody } from '../lib/api';
 import { formatDateRange } from '../lib/dates';
+import { useAuth } from '../lib/auth';
 import { accessLabels } from '../lib/labels';
 import type { Itinerary, ItineraryBundle } from '../types';
 
@@ -21,8 +22,10 @@ const schema = z.object({
 export function DashboardPage() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [error, setError] = useState('');
+  const [listError, setListError] = useState('');
 
   const query = useQuery({
     queryKey: ['itineraries'],
@@ -58,6 +61,21 @@ export function DashboardPage() {
     }
   }
 
+  async function hideItinerary(itinerary: Itinerary) {
+    const confirmed = window.confirm(
+      `¿Quitar “${itinerary.title}” de tus itinerarios? No se borrará y el propietario conservará el original.`,
+    );
+    if (!confirmed) return;
+
+    setListError('');
+    try {
+      await apiRequest<void>(`/itineraries/${itinerary.id}/hide`, { method: 'POST' });
+      await queryClient.invalidateQueries({ queryKey: ['itineraries'] });
+    } catch (value) {
+      setListError(value instanceof Error ? value.message : 'No se pudo quitar el itinerario de tu vista.');
+    }
+  }
+
   return (
     <div className="page-container">
       <header className="page-heading split">
@@ -68,6 +86,7 @@ export function DashboardPage() {
         <button className="button primary" onClick={() => setOpen(true)}><Icon name="plus" size={17} />Nuevo itinerario</button>
       </header>
 
+      {listError && <div className="notice error">{listError}</div>}
       {query.isLoading && <div className="center-state">Cargando…</div>}
       {query.isError && <div className="empty-state"><h2>No se pudieron cargar tus viajes</h2></div>}
       {query.data?.length === 0 && (
@@ -77,14 +96,31 @@ export function DashboardPage() {
         </div>
       )}
       <div className="trip-grid">
-        {query.data?.map((trip) => (
-          <Link className="trip-card" to={`/itineraries/${trip.id}`} key={trip.id}>
-            <div className="trip-card-top"><span className="pill">{accessLabels[trip.access || 'OWNER']}</span></div>
-            <h2>{trip.title}</h2>
-            <p>{trip.destination || 'Destino por decidir'}</p>
-            <div className="trip-dates"><span>{formatDateRange(trip.startDate, trip.endDate)}</span></div>
-          </Link>
-        ))}
+        {query.data?.map((trip) => {
+          const canHide = Boolean(user && trip.ownerId !== user.id);
+          return (
+            <article className={`trip-card${canHide ? ' has-actions' : ''}`} key={trip.id}>
+              <Link className="trip-card-link" to={`/itineraries/${trip.id}`}>
+                <div className="trip-card-top"><span className="pill">{accessLabels[trip.access || 'OWNER']}</span></div>
+                <h2>{trip.title}</h2>
+                <p>{trip.destination || 'Destino por decidir'}</p>
+                <div className="trip-dates"><span>{formatDateRange(trip.startDate, trip.endDate)}</span></div>
+              </Link>
+              {canHide && (
+                <button
+                  type="button"
+                  className="trip-hide-button"
+                  onClick={() => void hideItinerary(trip)}
+                  aria-label={`Quitar ${trip.title} de mis itinerarios`}
+                  title="Quitar de mis itinerarios"
+                >
+                  <Icon name="eye-off" size={16} />
+                  <span>Quitar de mis itinerarios</span>
+                </button>
+              )}
+            </article>
+          );
+        })}
       </div>
 
       {open && (

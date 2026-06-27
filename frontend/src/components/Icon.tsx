@@ -8,6 +8,7 @@ export type IconName =
   | 'clock'
   | 'copy'
   | 'edit-3'
+  | 'eye-off'
   | 'map-pin'
   | 'menu'
   | 'palette'
@@ -38,6 +39,7 @@ const paths: Record<IconName, ReactNode> = {
   clock: <><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></>,
   copy: <><rect width="14" height="14" x="8" y="8" rx="2" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></>,
   'edit-3': <><path d="M12 20h9" /><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4Z" /></>,
+  'eye-off': <><path d="m3 3 18 18" /><path d="M10.6 10.6a2 2 0 0 0 2.8 2.8" /><path d="M9.9 4.2A10.6 10.6 0 0 1 12 4c5.5 0 9.5 5.1 9.5 8a7.7 7.7 0 0 1-1.3 2.9" /><path d="M6.6 6.6C4 8.2 2.5 10.4 2.5 12c0 2.9 4 8 9.5 8a10 10 0 0 0 4.1-.9" /></>,
   'map-pin': <><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z" /><circle cx="12" cy="10" r="2" /></>,
   menu: <><path d="M4 6h16" /><path d="M4 12h16" /><path d="M4 18h16" /></>,
   palette: <><circle cx="13.5" cy="6.5" r=".5" fill="currentColor" stroke="none" /><circle cx="17.5" cy="10.5" r=".5" fill="currentColor" stroke="none" /><circle cx="8.5" cy="7.5" r=".5" fill="currentColor" stroke="none" /><circle cx="6.5" cy="12.5" r=".5" fill="currentColor" stroke="none" /><path d="M12 2a10 10 0 0 0 0 20h1.5a2 2 0 0 0 1.6-3.2l-.3-.4a2 2 0 0 1 1.6-3.2H18a4 4 0 0 0 4-4C22 6.1 17.5 2 12 2Z" /></>,
